@@ -8,10 +8,14 @@ Of course, I am not proclaiming to be any type of expert at this. I am learning 
 ---
 
 ### _Table of Contents_
-* (0.1) My Current Progress on the Capstone
-* (0.2) Starter Code Won't Start
-* (0.3) Deploying Your App
-* (0.4) Creating Your Databases
+* 0 : Introduction
+  * (0.1) My Current Progress on the Capstone
+  * (0.2) Starter Code Won't Start
+  * (0.3) Deploying Your App
+  * (0.4) Creating Your Databases
+  
+* 1 : US-01 - Create and list reservations
+  * (1.1) US-01: Tests
 
 ---
 
@@ -75,6 +79,11 @@ Last thing to do...
 1. Go to your `.env` file in the `./back-end` folder.
 2. Update all of those URLs with the corresponding "URL" on ElephantSQL. Like the password, there is a clipboard button for easy pasting.
 
-I hope that was easy for you, but it is okay if it isn't yet. This is all new stuff!
+I hope that was easy for you, but it is okay if it isn't yet. You're going to be a pro in no time.
 
 ---
+
+#### (1.1) Tests
+The testing for this one is a bit more frustrating than what we've dealt with before. Running `npm run test:1`, firstly, cannot run at the same time as your servers if you ran `npm run start:dev`. Secondly...I have a hard time getting `npm run test:1` to even work. It just crashes, and I'm guessing it's because I haven't done some part of the code yet. (However, I have been successful with `npm run test:1:frontend`.) Still...it's important to see what tests you need to pass. You can always look at the test files yourself, but for easy reference, here they are!
+* filling and submitting form creates a new reservation and then displays the dashboard for the reservation date
+* canceling form returns to previous page
