@@ -15,11 +15,13 @@ Of course, I am not proclaiming to be any type of expert at this. I am learning 
   * (0.4) Creating Your Databases
   
 * 1 : US-01 - Create and list reservations
-  * (1.1) US-01: Tests
+  * (1.1) Tests
+  * (1.2) Form
+  * (1.3) Dipping our toes back into React
 
 ---
 
-#### *(0.1) My Current Progress on the Capstone*
+### *(0.1) My Current Progress on the Capstone*
 - [ ] US-01 Create and list reservations
 - [ ] US-02 Create reservation on a future, working date
 - [ ] US-03 Create reservation within eligible timeframe
@@ -31,14 +33,14 @@ Of course, I am not proclaiming to be any type of expert at this. I am learning 
 
 ---
 
-#### *(0.2) Starter Code Won't Start*
+### *(0.2) Starter Code Won't Start*
 Surprise! Thinkful starter code will crash when running `npm run start:dev`. If you read my guide for Flashcards, you'll remember the fix.
 ##### In `./package.json` (make sure you're looking at the file in the root directory):
 Change the `start:dev` script to: `"npx concurrently \"npm run start:dev --prefix ./back-end\" \"npm start --prefix ./front-end\""`
 
 ---
 
-#### *(0.3) Deploying Your App*
+### *(0.3) Deploying Your App*
 The project recommends you deploy early and often. The EASIEST way to do this is by deploying via GitHub, not the commandline.
 1. Initialize and push your app onto a new GitHub repository.
 2. If you cloned the project, then it is possible that the project is still connected to Thinkful's repo. We need to delete the `.git` folder in the directory (NOT `.github`). If you can't find the `.git` folder, go to your File Explorer, and view hidden items. You should be able to see it and delete it.
@@ -55,7 +57,7 @@ The project recommends you deploy early and often. The EASIEST way to do this is
 
 ---
 
-#### *(0.4) Creating Your Databases*
+### *(0.4) Creating Your Databases*
 Here's a refresher on ElephantSQL and DBeaver!
 1. [Create a new instance](https://customer.elephantsql.com/instance/create).
 2. Select a name and tag. I named one of mine `pt-devlopment` and gave it a `Periodic Tables` tag.
@@ -67,9 +69,9 @@ Time to move onto DBeaver.
 1. Click on New Connection (it looks like a blue plug with a plus sign).
 2. Choose PostgreSQL.
 3. Using the information from ElephantSQL:
-* Host will be the "Server"
-* Database and Username will be the "User & Default database"
-* Password can be copied using the clipboard icon
+  * Host will be the "Server"
+  * Database and Username will be the "User & Default database"
+  * Password can be copied using the clipboard icon
 4. If all of that works, the "Test Connection" button should show a successful connection.
 5. Rename the connection so they're easily identifiable.
 6. Time to do this three more times!!! Don't have too much fun!
@@ -83,7 +85,175 @@ I hope that was easy for you, but it is okay if it isn't yet. You're going to be
 
 ---
 
-#### (1.1) Tests
-The testing for this one is a bit more frustrating than what we've dealt with before. Running `npm run test:1`, firstly, cannot run at the same time as your servers if you ran `npm run start:dev`. Secondly...I have a hard time getting `npm run test:1` to even work. It just crashes, and I'm guessing it's because I haven't done some part of the code yet. (However, I have been successful with `npm run test:1:frontend`.) Still...it's important to see what tests you need to pass. You can always look at the test files yourself, but for easy reference, here they are!
-* filling and submitting form creates a new reservation and then displays the dashboard for the reservation date
-* canceling form returns to previous page
+### *(1.1) Tests*
+The testing for this one is a bit more frustrating than what we've dealt with before. Running `npm run test:1`, firstly, cannot run at the same time as your servers if you ran `npm run start:dev` (they are on the same port...). Secondly...I have a hard time getting `npm run test:1` to even work. It just crashes, and I'm guessing it's because I haven't done some part of the code yet. (However, I have been successful with `npm run test:1:frontend`.) Thirdly, even when the tests do run, it's sometimes really difficult to see what the tests even are. You can always look at the test files yourself, but I LOVE having all of the tests in a list for easy reference, so here they are!
+* Front End:
+  * filling and submitting form creates a new reservation and then displays the dashboard for the reservation date
+  * canceling form returns to previous page
+
+---
+
+### *(1.2) Form*
+I am going to try my best to be as in-depth as I can about my process as a programmer and how I am personally building my app. I'm going to start by building up the front-end entirely. I'm not working to style it at all. I'm getting what I need to be displayed on each page to create a minimum-viable product (MVP) without focusing on little details. I am a very detail-oriented person, but I know I have to ignore it and save it for later, because it's not going to help right now!
+
+Of course, this is YOUR project and YOUR workflow. YOU decide what to do and when!
+
+Let's make our new component. Here is what I generally do when first creating a React component.
+```javascript
+// 1. import react
+// 2. create component function & export it
+// 3. create a return statement (most, if not all react components will return some JSX)
+
+import React from "react";
+
+// i named my component NewReservation:
+export default function NewReservation() {
+    return (
+    
+    );
+}
+```
+
+`/layout/routes.js` - Before we build our page, we need to route it!
+```javascript
+// code before & after ommited for brevity (from now on, this will be represented by ...)
+
+<Route exact={true} path="/reservations/new">
+    <NewReservation />
+</Route>
+```
+
+`/reservations/NewReservation.js` - Let's make our form and our inputs.
+```javascript
+// here is what my form looks like
+return (
+    <form>
+        <label htmlFor="first_name">Field Name</label>
+        <input
+            name="first_name"
+            id=="first_name"
+            type="text"
+            onChange={} // we will add this in soon!
+            value={} // this as well!
+            required // this will make the field non-nullable
+        />
+        
+        // now to make the rest of them!
+    </form>
+);
+```
+
+Let's look at some helpful input types:
+* "text" - value is a string
+* "number" - value is a number
+* "tel" - value is a phone number (i'd suggest looking up the [pattern attribute](https://www.w3schools.com/tags/att_input_pattern.asp) as well)
+* "date" - string
+* "time" - string
+
+Let's make some buttons.
+```javascript
+    <form>
+        // ...
+        <button type="submit" onClick={}>Submit</button>
+        <button type="button" onClick={}>Cancel</button>
+    </form>
+```
+
+Byotiful.
+
+---
+
+### *(1.3) Dipping our toes back into React*
+*shudder* It's React...
+
+Let's start by setting up our form data with the `useEffect` hook.
+```javascript
+import React, { useState } from "react";
+
+export default function NewReservation() {
+    // recall that useState takes the form [state, setState], where setState is an asynchronous function
+    const [formData, setFormData] = useState();
+}
+```
+
+We now want to create an initial, default form that the user will see when first visiting the page.
+```javascript
+// we get to put this right inside of our useState hook as an object:
+const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    mobile_number: "",
+    reservation_date: "",
+    reservation_time: "",
+    people: 0,
+});
+
+// why did i use underscore_case here instead of camelCase?
+// all of our <input> fields have a name that uses underscore case. when we are editing the form fields later, we want to be consistent with the field names.
+```
+
+Everytime a user makes a change to an input, we want to record that as a state.
+```javascript
+function handleChange({ target }) { // i deconstruct the `event` argument
+    // we will be using our useState hook to store whatever changes are made.
+    // this is why we use underscore case; when we access target, we get the input name in underscore_case.
+    setFormData({ ...formData, [target.name]: target.value });
+    // remember to use the spread operator `...` so all previous values do not get overwritten.
+}
+```
+
+Recall that we left some attributes blank on the inputs...`onChange` and `value`. Let's go in and fill it now!
+```javascript
+// example:
+<input
+    // ...
+    
+    onChange={handleChange} // the function we just made! the onChange attribute will automatically pass the `event` argument based off of which input was clicked
+    // we can use our useState hook to store the values of each input now
+    value={formData.first_name}
+/>
+
+```
+
+Both the cancel and submit button will be redirecting people. Let's refresh ourselves with our useHistory hook:
+```javascript
+import { useHistory } from "react-router-dom";
+
+export default function NewReservation() {
+    const history = useHistory();
+
+    // example code:
+    // recall how to bring back someone back a page:
+    history.go(-1);
+    
+    // you can also call:
+    history.goBack(); // this is the same as the one above!
+    
+    // great, let's put this into our onClick handler for cancel!
+    <button type="button" onClick={history.goBack}>Cancel</button>
+```
+
+As of now, the cancel button test is passing for me.
+
+Let's make our submit handler. As of right now, I'm not going to be sending this form anywhere, because there's no where to send it to! We'll come back to this in the future.
+```javascript
+function handleSubmit(event) {
+		event.preventDefault(); // the normal submit refreshes the entire page. we don't want that to happen!
+  
+  // in the future, we will be editing this submit handler to actually post the request to the database. i'm not worried about it right now though!
+  
+  // the submit button will be redirecting the user to the dashboard on a specific date.
+  // i saw in the next user story that the dashboard will have a URL query with the date. it looks like /dashboard?date=2035-12-30
+  // so i will be replicating this here. on top of this, i imported one of the util functions in the utils folder. yeesss! less code for me to write.
+  history.push(`/dashboard?date=${formatReservationDate(formData.reservation_date)}`);
+}
+
+// ...
+// time to add our function to the submit button!
+<button type="submit" onClick={handleSubmit}>Submit</button>
+```
+
+If you run your tests, you'll see hat the submit test is still failing. It's an async error, so I think this might be because not everything is set up yet. For now, I will be moving on to our next user story! Great job refreshing yourselves with React. It's been a bit.
+
+---
+
