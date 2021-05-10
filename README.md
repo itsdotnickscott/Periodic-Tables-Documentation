@@ -35,8 +35,7 @@ Of course, I am not proclaiming to be any type of expert at this. I am learning 
 
 ### *(0.2) Starter Code Won't Start*
 Surprise! Thinkful starter code will crash when running `npm run start:dev`. If you read my guide for Flashcards, you'll remember the fix.
-##### In `./package.json` (make sure you're looking at the file in the root directory):
-Change the `start:dev` script to: `"npx concurrently \"npm run start:dev --prefix ./back-end\" \"npm start --prefix ./front-end\""`
+In `./package.json` (make sure you're looking at the file in the root directory), change the `start:dev` script to: `"npx concurrently \"npm run start:dev --prefix ./back-end\" \"npm start --prefix ./front-end\""`
 
 ---
 
@@ -254,6 +253,9 @@ function handleSubmit(event) {
 ```
 
 If you run your tests, you'll see hat the submit test is still failing. It's an async error, so I think this might be because not everything is set up yet. For now, I will be moving on to our next user story! Great job refreshing yourselves with React. It's been a bit.
+
+Here's what my page looks like now. Ugly and unformatted! :)
+![us-01-form](https://user-images.githubusercontent.com/64234681/117707205-1ff64f00-b183-11eb-8991-188f07d50f97.JPG)
 
 ---
 
