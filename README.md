@@ -1,14 +1,4 @@
 # Periodic Tables Capstone Guide
-Hi everybody! We are SO close to graduating. I am literally SO PROUD of every single one of you. We've (almost) made it through the hell that is Thinkful by Chegg. My hope is that this guide will be able to relieve some of the stress on you and that it pushes you in a comfortable direction. I will be updating this README as I work through the project and will be putting as much as here as I can. 
-
-On top of that, you can use the Issues tab if you have ANY (literally any) questions or you can post suggestions of content to add to the guide for everyone to see. I will try to be as attentive as I can on this repo. If you would ever like to look at [my project repo](https://github.com/itsdotnickscott/periodic-tables), I will be pushing to the repo when I finish checkpoints as frequently as I can. It's not cheating - this is software engineering. We do not need to reinvent the wheel. Observe and learn through example. Feel free to use that Issues tab to also ask about why I implemented a feature a certain way or how I got around a certain problem.
-
-Of course, I am not proclaiming to be any type of expert at this. I am learning just as much as all of you, and I will make mistakes and blunders. It's all part of the coding experience, baby. I recommend you read the instructions first before reading the sections. They'll make a lot more sense in-context!
-
-If I've been a help to you at all during this cohort, I would greatly appreciate some LinkedIn endorsements? Is this basically me asking you to smash that like button?
-
----
-
 ### _Table of Contents_
 * **0 : Introduction**
   * (0.1) Changelog
@@ -22,6 +12,17 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
   * (1.2) Form
   * (1.3) Dipping our toes back into React
   * (1.4) Dashboard
+
+---
+
+# **0 : Introduction**
+Hi everybody! We are SO close to graduating. I am literally SO PROUD of every single one of you. We've (almost) made it through the hell that is Thinkful by Chegg. My hope is that this guide will be able to relieve some of the stress on you and that it pushes you in a comfortable direction. I will be updating this README as I work through the project and will be putting as much as here as I can. 
+
+On top of that, you can use the Issues tab if you have ANY (literally any) questions or you can post suggestions of content to add to the guide for everyone to see. I will try to be as attentive as I can on this repo. If you would ever like to look at [my project repo](https://github.com/itsdotnickscott/periodic-tables), or the [deployed version of my app](https://periodic-tables-frontend-7tiv1r4sx-itsdotnickscott.vercel.app/dashboard) I will be pushing to the repo when I finish checkpoints as frequently as I can. It's not cheating - this is software engineering. We do not need to reinvent the wheel. Observe and learn through example. Feel free to use that Issues tab to also ask about why I implemented a feature a certain way or how I got around a certain problem.
+
+Of course, I am not proclaiming to be any type of expert at this. I am learning just as much as all of you, and I will make mistakes and blunders. It's all part of the coding experience, baby. I recommend you read the instructions first before reading the sections. They'll make a lot more sense in-context!
+
+If I've been a help to you at all during this cohort, I would greatly appreciate some LinkedIn endorsements? Is this basically me asking you to smash that like button?
 
 ---
 
@@ -93,11 +94,17 @@ I hope that was easy for you, but it is okay if it isn't yet. You're going to be
 
 ---
 
+# **1 : US-01 - Create and list reservations (front end)**
+The testing for this project is a bit more frustrating than what we've dealt with before. Running `npm run test:1`, firstly, cannot run at the same time as your servers if you ran `npm run start:dev` (they are on the same port...). Secondly...I have a hard time getting `npm run test:1` to even work. It just crashes, and I'm guessing it's because I haven't done some part of the code yet. (However, I have been successful with `npm run test:1:frontend`.) Thirdly, even when the tests do run, it's sometimes really difficult to see what the tests even are.
+
+---
+
 ### *(1.1) Tests*
-The testing for this one is a bit more frustrating than what we've dealt with before. Running `npm run test:1`, firstly, cannot run at the same time as your servers if you ran `npm run start:dev` (they are on the same port...). Secondly...I have a hard time getting `npm run test:1` to even work. It just crashes, and I'm guessing it's because I haven't done some part of the code yet. (However, I have been successful with `npm run test:1:frontend`.) Thirdly, even when the tests do run, it's sometimes really difficult to see what the tests even are. You can always look at the test files yourself, but I LOVE having all of the tests in a list for easy reference, so here they are!
-* Front End:
-  * filling and submitting form creates a new reservation and then displays the dashboard for the reservation date
-  * canceling form returns to previous page
+You can always look at the test files yourself, but I LOVE having all of the tests in a list for easy reference, so here they are! (tests checked off are tests that are passing for my current code).
+
+Front End:
+- [ ] filling and submitting form creates a new reservation and then displays the dashboard for the reservation date
+- [X] canceling form returns to previous page
 
 ---
 
