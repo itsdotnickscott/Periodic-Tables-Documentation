@@ -1,29 +1,29 @@
 # Periodic Tables Capstone Guide
 ### _Table of Contents_
-* **0 : Introduction**
-	* (0.1) Changelog
-	* (0.2) My current progress on the capstone
-	* (0.3) Starter code won't start
-	* (0.4) Deploying your app
-	* (0.5) Creating your databases
+* [**0 : Introduction**](#0--introduction)
+	* [(0.1) Changelog](#01-changelog)
+	* [(0.2) My current progress on the capstone](#02-my-current-progress-on-the-capstone)
+	* [(0.3) Starter code won't start](#03-starter-code-wont-start)
+	* [(0.4) Deploying your app](#04-deploying-your-app)
+	* [(0.5) Creating your databases](#05-creating-your-databases)
   
-* **1 : US-01 - Create and list reservations (front end)**
-	* (1.1) Tests
-	* (1.2) Form
-	* (1.3) Dipping our toes back into React
-	* (1.4) Dashboard
+* [**1 : US-01 - Create and list reservations (front end)**](#1--us-01---create-and-list-reservations-front-end)
+	* [(1.1) Tests](#11-tests)
+	* [(1.2) Form](#12-form)
+	* [(1.3) Dipping our toes back into React](#13-dipping-our-toes-back-into-react)
+	* [(1.4) Dashboard](#14-dashboard)
 
-* **2 : US-02 - Create reservation on a future, working date (front end)**
-	* (2.1) Tests
-	* (2.2) Tuesdays
-	* (2.3) Reservation date is in the past
-	* (2.4) Hooking it up
+* [**2 : US-02 - Create reservation on a future, working date (front end)**](#2--us-02---create-reservation-on-a-future-working-date-front-end)
+	* [(2.1) Tests](#21-tests)
+	* [(2.2) Tuesdays](#22-tuesdays)
+	* [(2.3) Reservation date is in the past](#23-reservation-date-is-in-the-past)
+	* [(2.4) Hooking it up](#24-hooking-it-up)
 
-* **3 : US-03 - Create reservation within eligible timeframe (front end)**
-	* (3.1) Tests
-	* (3.2) Time is in the past
-	* (3.3) Time constraints
-	* (3.X - Optional) Form validation
+* [**3 : US-03 - Create reservation within eligible timeframe (front end)**](#3--us-03---create-reservation-within-eligible-timeframe-front-end)
+	* [(3.1) Tests](#31-tests)
+	* [(3.2) Time is in the past](#32-time-is-in-the-past)
+	* [(3.3) Time constraints](#33-time-constraints)
+	* [(3.X - Optional) Form validation](#3x---optional-form-validation)
 
 ---
 
@@ -38,7 +38,7 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
 
 ---
 
-### *(0.1) Changelog (NEW 5/11/2021)*
+### *(0.1) Changelog*
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
 
 #### May 11th
@@ -417,7 +417,7 @@ Notice I edited the `<h4>` element to show the date. If we go to our web page an
 
 ---
 
-# **2 : US-01 - Create reservation on a future, working date (front end)**
+# **2 : US-02 - Create reservation on a future, working date (front end)**
 For this user story, we will be adding some features onto our NewReservation component. We will be validating the reservation date after a user tries to submit the form. Let's head on over to `/reservations/NewReservation.js`! (This is where I organized this file - yours might be in a different location / have a different name.)
 
 I'd like to note that for this section, I spent a bit coming up with a solid solution to this problem. The Date class CAN be tricky, since dates are treated as if they are a UTC time. However, sometimes JavaScript will use your local time zone at times to interpret them. We have to be careful what "time zone" we are working in (I'm referring to UTC as a time zone even though it technically isn't).
