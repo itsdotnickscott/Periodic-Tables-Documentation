@@ -1,24 +1,30 @@
 # Periodic Tables Capstone Guide
 ### _Table of Contents_
 * **0 : Introduction**
-  * (0.1) Changelog
-  * (0.2) My Current Progress on the Capstone
-  * (0.3) Starter Code Won't Start
-  * (0.4) Deploying Your App
-  * (0.5) Creating Your Databases
+	* (0.1) Changelog
+	* (0.2) My Current Progress on the Capstone
+	* (0.3) Starter Code Won't Start
+	* (0.4) Deploying Your App
+	* (0.5) Creating Your Databases
   
 * **1 : US-01 - Create and list reservations (front end)**
-  * (1.1) Tests
-  * (1.2) Form
-  * (1.3) Dipping our toes back into React
-  * (1.4) Dashboard
+	* (1.1) Tests
+	* (1.2) Form
+	* (1.3) Dipping our toes back into React
+	* (1.4) Dashboard
+
+* **2 : US-02 - Create reservation on a future, working date (front end)**
+	* (2.1) Tests
+	* (2.2) Tuesdays
+	* (2.3) Reservation date is in the past
+	* (2.4) Hooking it up
 
 ---
 
 # **0 : Introduction**
-Hi everybody! We are SO close to graduating. I am literally SO PROUD of every single one of you. We've (almost) made it through the hell that is Thinkful by Chegg. My hope is that this guide will be able to relieve some of the stress on you and that it pushes you in a comfortable direction. I will be updating this README as I work through the project and will be putting as much as here as I can. 
+Hi everybody! We are SO close to graduating. I am literally SO PROUD of every single one of you. We've (almost) made it through the hell that is Thinkful by Chegg. My hope is that this guide will be able to relieve some of the stress on you and that it pushes you in a comfortable direction. I will be updating this README as I work through the project and will be putting as much here as I can. 
 
-On top of that, you can use the Issues tab if you have ANY (literally any) questions or you can post suggestions of content to add to the guide for everyone to see. I will try to be as attentive as I can on this repo. If you would ever like to look at [my project repo](https://github.com/itsdotnickscott/periodic-tables), or the [deployed version of my app](https://periodic-tables-frontend-7tiv1r4sx-itsdotnickscott.vercel.app/dashboard) I will be pushing to the repo when I finish checkpoints as frequently as I can. It's not cheating - this is software engineering. We do not need to reinvent the wheel. Observe and learn through example. Feel free to use that Issues tab to also ask about why I implemented a feature a certain way or how I got around a certain problem.
+On top of that, you can use the Issues tab if you have ANY (literally any) questions. You can also post suggestions of content to add to the guide for everyone to see. I will try to be as attentive as I can on this repo. If you would ever like to look at [my project repo](https://github.com/itsdotnickscott/periodic-tables), or the [deployed version of my app](https://periodic-tables-frontend-7tiv1r4sx-itsdotnickscott.vercel.app/dashboard), I will be pushing to the repo when I finish checkpoints as frequently as I can. Looking at my code and my process is not cheating! This is software engineering - we don't need to reinvent the wheel. Observe and learn through example. :P Feel free to use that Issues tab to also ask about why I implemented a feature a certain way or how I got around a certain problem.
 
 Of course, I am not proclaiming to be any type of expert at this. I am learning just as much as all of you, and I will make mistakes and blunders. It's all part of the coding experience, baby. I recommend you read the instructions first before reading the sections. They'll make a lot more sense in-context!
 
@@ -34,7 +40,7 @@ If I significantly edited a section after it was already written, there's a chan
 ### *(0.2) My Current Progress on the Capstone*
 Front End:
 - [ ] US-01 Create and list reservations
-- [ ] US-02 Create reservation on a future, working date
+- [X] US-02 Create reservation on a future, working date
 - [ ] US-03 Create reservation within eligible timeframe
 - [ ] US-04 Seat reservation
 - [ ] US-05 Finish an occupied table
@@ -113,7 +119,6 @@ The testing for this project is a bit more frustrating than what we've dealt wit
 ### *(1.1) Tests*
 You can always look at the test files yourself, but I LOVE having all of the tests in a list for easy reference, so here they are! (tests checked off are tests that are passing for my current code).
 
-Front End:
 - [ ] filling and submitting form creates a new reservation and then displays the dashboard for the reservation date
 - [X] canceling form returns to previous page
 
@@ -214,7 +219,7 @@ const [formData, setFormData] = useState({
 	people: 0,
 });
 
-// why did i use underscore_case here instead of camelCase?
+// ??? why did i use underscore_case here instead of camelCase?
 // all of our <input> fields have a name that uses underscore case. when we are editing the form fields later, we want to be consistent with the field names.
 ```
 
@@ -347,7 +352,7 @@ Firstly, we have to acknowledge the query in the URL. If there is no date query,
 import { useLocation } from "react-router-dom";
 
 function useQuery() {
-  return new URLSearchParams(useLocation().search);
+	return new URLSearchParams(useLocation().search);
 }
 ```
 
@@ -400,6 +405,179 @@ function Dashboard({ date }) {
 Notice I edited the `<h4>` element to show the date. If we go to our web page and test out our buttons, we can see the date actually changing!
 
 ![dashboard buttons example](https://user-images.githubusercontent.com/64234681/117718994-b7fb3500-b191-11eb-8c2c-a7afcd860419.gif)
+
+---
+
+# **2 : US-01 - Create reservation on a future, working date (front end)**
+For this user story, we will be adding some features onto our NewReservation component. We will be validating the reservation date after a user tries to submit the form. Let's head on over to `/reservations/NewReservation.js`! (This is where I organized this file - yours might be in a different location / have a different name.)
+
+I'd like to note that for this section, I spent a bit coming up with a solid solution to this problem. The Date class CAN be tricky, since dates are treated as if they are a UTC time. However, sometimes JavaScript will use your local time zone at times to interpret them. We have to be careful that we are always working in UTC (besides, PostgreSQL databases record dates in UTC anyway).
+
+Looking at the [Date class documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) was helpful during this user story.
+
+I didn't record my whole process in this guide. I'm just giving you my current solutions to the checkpoints. What might seem like a simple solution took a good bit of refactoring and simplifying. If you'd like to take a good shot at this before reading, please do! Otherwise, let's go solve this thing!
+
+---
+
+## *(2.1) Tests*
+- [X] displays an error message if the date of the reservation occurs in the past
+- [X] displays an error message if reservation date falls on a Tuesday
+
+---
+
+## *(2.2) Tuesdays*
+Second worst only to Mondays. Looks like the restaurant is closed on Tuesdays, and we should display errors to the user if they try to reserve on a Tuesday.
+
+`/layout/ErrorAlert.js` - Before we start writing our validation code, let's take a look at the `ErrorAlert` component that was included with the starter code.
+```javascript
+/**
+ * Defines the alert message to render if the specified error is truthy.
+ * @param error
+ *  an instance of an object with `.message` property as a string, typically an Error instance.
+ * @returns {JSX.Element}
+ *  a bootstrap danger alert that contains the message string.
+ */
+
+function ErrorAlert({ error }) {
+	return (
+		error && (
+			<div className="alert alert-danger m-2">Error: {error.message}</div>
+		)
+	);
+}
+
+export default ErrorAlert;
+```
+
+This component was also used in the `Dashboard` component when there is an error grabbing the reservations. `ErrorAlert` uses a `<div>` with `className="alert alert-danger m-2"`, so this will satisfy the tests.
+
+`reservations/NewReservation.js` - Let's check to see if the reservation date is a Tuesday!
+```javascript
+// i'm going to create my own function here, specialized to validating the reservation date.
+function validateDate() {
+	// we will be using the built-in Date class to be comparing our dates
+	// previously in this file, we stored the form's input values in a react state called formData
+	// we can access that here, and use the Date constructor to create a date in UTC
+	// the string is already stored in the format YYYY-MM-DD, so we don't have to do anything special to the string
+	const reserveDate = new Date(formData.reservation_date);
+	
+	// it's possible we can have multiple errors when a date is submitted. i am going to initialize an array to hold these errors
+	const foundErrors = [];
+	
+	// the Date class has many functions, one of which grabs the day
+	// 0 is sunday, 6 is saturday
+	if(reserveDate.getUTCDay() === 2) {
+		// it's tuesday...let's push in an error object to our array!
+		foundErrors.push({ message: "Reservations cannot be made on a Tuesday (Restaurant is closed)." });
+	}
+}
+```
+
+---
+
+## *(2.3) Reservation date is in the past*
+Let's keep building on our validation function. I would like to start by grabbing today's date.
+```javascript
+function validateDate() {
+	const reserveDate = new Date(formData.reservation_date);
+	
+	// we will need to compare the reservation date to today's date.
+	const todaysDate = new Date(today());
+	
+	// ??? why did i implement today's date in this way?
+	// if you look at the documentation, you'll see there is another way to create a Date object that represents today
+	// you could say const todaysDate = new Date(), as an empty constructor will default to the date and time now.
+	// here's where we run into an issue - creating a date in that fashion will create a date in YOUR local time zone.
+	// we need to work with UTC, so this won't cut it for us. we can use the given today() function in utils
+
+	const foundErrors = [];
+
+	if(reserveDate.getUTCDay() === 2) {  
+		foundErrors.push({ message: "Reservations cannot be made on a Tuesday (Restaurant is closed)." });
+	}
+}
+```
+
+Next, we will be comparing dates. After creating a bit of a complex algorithm to check if a certain date is in the past, I realized the `Date` class can be compared normally. Whoops! That's okay, this solution is significantly more elegant. There are some restrictions on comparing dates. If you want to know more about them, [check this out](https://stackoverflow.com/questions/492994/compare-two-dates-with-javascript).
+```javascript
+if(reserveDate < todaysDate) {
+	foundErrors.push({ message: "Reservations cannot be made in the past." });
+}
+```
+
+---
+
+## *(2.4) Hooking it up*
+We should now successfully be finding these errors, but as of right now, we're not doing anything with them. The reservation will still submit normally, no matter what. We will need to hook it up with the rest of the `NewReservation` component.
+```javascript
+// my solution involves creating a new state that will contain the errors
+const [dateErrors, setDateErrors] = useState([]);
+```
+
+We'll have the validation function set its found errors into the state. If there were no errors, it'll remain an empty array.
+```javascript
+function validateDate() {
+	// ...
+
+	setDateErrors(foundErrors);
+}
+```
+
+Now, we'll have the validation be called after every time the submit button is pressed.
+```javascript
+function handleSubmit(event) {
+	event.preventDefault();
+
+	// if there are errors, we don't want to push the user onto a different page, we want them to stay on this page until the issue is resolved.
+	// because of this, i'm thinking of adding a return statement to our validation function that will be true when the date is valid and false if it isn't.
+	// that way, we only push the user if there are no errors with the reservation date.
+	if(validateDate()) {
+		history.push(`/dashboard?date=${formData.reservation_date}`);
+	}
+}
+```
+
+Great! I want to go add those return statements I was talking about.
+```javascript
+function validateDate() {
+	// ...
+
+	setDateErrors(foundErrors);
+
+	// we can use our foundErrors array to check if there were any problems.
+	if(foundErrors.length > 0) {
+		return false;
+	}
+	// if we get here, our reservation date is valid!
+	return true;
+}
+```
+
+The last thing we have to do is have the errors display if there are any.
+```javascript
+// ...
+	
+// i'm going to create an errors variable that maps every error into an ErrorAlert component
+// no errors? returns nothing.
+const errors = () => {
+	return dateErrors.map((error, idx) => <ErrorAlert key={idx} error={error} />);
+}
+
+return (
+	<form>
+		{ /* we can throw our errors right at the top, so they'll be noticeable to the user */ }
+		{errors()}
+
+		<label htmlFor="first_name">First Name:&nbsp;</label>
+			
+		// ...
+	</form>
+);
+```
+
+All my front-end tests for US-02 are passing! Time to see it in action:
+
+![new reservations date errors example](https://user-images.githubusercontent.com/64234681/117870533-15a28680-b251-11eb-9f0d-a3252f8a1d02.gif)
 
 ---
 
