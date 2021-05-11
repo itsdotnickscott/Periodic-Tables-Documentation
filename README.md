@@ -2,10 +2,10 @@
 ### _Table of Contents_
 * **0 : Introduction**
 	* (0.1) Changelog
-	* (0.2) My Current Progress on the Capstone
-	* (0.3) Starter Code Won't Start
-	* (0.4) Deploying Your App
-	* (0.5) Creating Your Databases
+	* (0.2) My current progress on the capstone
+	* (0.3) Starter code won't start
+	* (0.4) Deploying your app
+	* (0.5) Creating your databases
   
 * **1 : US-01 - Create and list reservations (front end)**
 	* (1.1) Tests
@@ -18,6 +18,12 @@
 	* (2.2) Tuesdays
 	* (2.3) Reservation date is in the past
 	* (2.4) Hooking it up
+
+* **3 : US-03 - Create reservation within eligible timeframe (front end)**
+	* (3.1) Tests
+	* (3.2) Time is in the past
+	* (3.3) Time constraints
+	* (3.X - Optional) Form validation
 
 ---
 
@@ -32,16 +38,19 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
 
 ---
 
-### *(0.1) Changelog*
+### *(0.1) Changelog (NEW 5/11/2021)*
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
+
+#### May 11th
+* Edited all of Section 2. (solution changed)
 
 ---
 
-### *(0.2) My Current Progress on the Capstone*
+### *(0.2) My current progress on the capstone*
 Front End:
 - [ ] US-01 Create and list reservations
 - [X] US-02 Create reservation on a future, working date
-- [ ] US-03 Create reservation within eligible timeframe
+- [X] US-03 Create reservation within eligible timeframe
 - [ ] US-04 Seat reservation
 - [ ] US-05 Finish an occupied table
 - [ ] US-06 Reservation Status
@@ -60,13 +69,13 @@ Back End:
 
 ---
 
-### *(0.3) Starter Code Won't Start*
+### *(0.3) Starter code won't start*
 Surprise! Thinkful starter code will crash when running `npm run start:dev`. If you read my guide for Flashcards, you'll remember the fix.
 In `./package.json` (make sure you're looking at the file in the root directory), change the `start:dev` script to: `"npx concurrently \"npm run start:dev --prefix ./back-end\" \"npm start --prefix ./front-end\""`
 
 ---
 
-### *(0.4) Deploying Your App*
+### *(0.4) Deploying your app*
 The project recommends you deploy early and often. The EASIEST way to do this is by deploying via GitHub, not the commandline.
 1. Initialize and push your app onto a new GitHub repository.
 2. If you cloned the project, then it is possible that the project is still connected to Thinkful's repo. We need to delete the `.git` folder in the directory (NOT `.github`). If you can't find the `.git` folder, go to your File Explorer, and view hidden items. You should be able to see it and delete it.
@@ -83,7 +92,7 @@ The project recommends you deploy early and often. The EASIEST way to do this is
 
 ---
 
-### *(0.5) Creating Your Databases*
+### *(0.5) Creating your databases*
 Here's a refresher on ElephantSQL and DBeaver!
 1. [Create a new instance](https://customer.elephantsql.com/instance/create).
 2. Select a name and tag. I named one of mine `pt-devlopment` and gave it a `Periodic Tables` tag.
@@ -411,11 +420,19 @@ Notice I edited the `<h4>` element to show the date. If we go to our web page an
 # **2 : US-01 - Create reservation on a future, working date (front end)**
 For this user story, we will be adding some features onto our NewReservation component. We will be validating the reservation date after a user tries to submit the form. Let's head on over to `/reservations/NewReservation.js`! (This is where I organized this file - yours might be in a different location / have a different name.)
 
-I'd like to note that for this section, I spent a bit coming up with a solid solution to this problem. The Date class CAN be tricky, since dates are treated as if they are a UTC time. However, sometimes JavaScript will use your local time zone at times to interpret them. We have to be careful that we are always working in UTC (besides, PostgreSQL databases record dates in UTC anyway).
+I'd like to note that for this section, I spent a bit coming up with a solid solution to this problem. The Date class CAN be tricky, since dates are treated as if they are a UTC time. However, sometimes JavaScript will use your local time zone at times to interpret them. We have to be careful what "time zone" we are working in (I'm referring to UTC as a time zone even though it technically isn't).
 
 Looking at the [Date class documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) was helpful during this user story.
 
+There are two paths we can go down:
+- Work completely in UTC
+- Work completely in the user's time zone
+
+I'm deciding to work in the user's time zone so we can base everything off of their local time zone.
+
 I didn't record my whole process in this guide. I'm just giving you my current solutions to the checkpoints. What might seem like a simple solution took a good bit of refactoring and simplifying. If you'd like to take a good shot at this before reading, please do! Otherwise, let's go solve this thing!
+
+> EDIT (5/11): If you read this before it was changed, my old solution worked completely in UTC. After moving onto the third user story, I realized that working in the user's local time zone might be easier in the long run.
 
 ---
 
@@ -457,16 +474,15 @@ This component was also used in the `Dashboard` component when there is an error
 function validateDate() {
 	// we will be using the built-in Date class to be comparing our dates
 	// previously in this file, we stored the form's input values in a react state called formData
-	// we can access that here, and use the Date constructor to create a date in UTC
-	// the string is already stored in the format YYYY-MM-DD, so we don't have to do anything special to the string
+	// we can access that here, and use the Date constructor
+	// the string is already stored in the format YYYY-MM-DD, so we don't have to do anything special to the string...at least not yet.
 	const reserveDate = new Date(formData.reservation_date);
 	
 	// it's possible we can have multiple errors when a date is submitted. i am going to initialize an array to hold these errors
 	const foundErrors = [];
 	
-	// the Date class has many functions, one of which grabs the day
-	// 0 is sunday, 6 is saturday
-	if(reserveDate.getUTCDay() === 2) {
+	// the Date class has many functions, one of which returns the day (0 is sunday, 6 is saturday)
+	if(reserveDate.getDay() === 2) {
 		// it's tuesday...let's push in an error object to our array!
 		foundErrors.push({ message: "Reservations cannot be made on a Tuesday (Restaurant is closed)." });
 	}
@@ -482,23 +498,18 @@ function validateDate() {
 	const reserveDate = new Date(formData.reservation_date);
 	
 	// we will need to compare the reservation date to today's date.
-	const todaysDate = new Date(today());
-	
-	// ??? why did i implement today's date in this way?
-	// if you look at the documentation, you'll see there is another way to create a Date object that represents today
-	// you could say const todaysDate = new Date(), as an empty constructor will default to the date and time now.
-	// here's where we run into an issue - creating a date in that fashion will create a date in YOUR local time zone.
-	// we need to work with UTC, so this won't cut it for us. we can use the given today() function in utils
+	// an empty constructor defaults the date to whatever it is right now
+	const todaysDate = new Date();
 
 	const foundErrors = [];
 
-	if(reserveDate.getUTCDay() === 2) {  
+	if(reserveDate.getDay() === 2) {  
 		foundErrors.push({ message: "Reservations cannot be made on a Tuesday (Restaurant is closed)." });
 	}
 }
 ```
 
-Next, we will be comparing dates. After creating a bit of a complex algorithm to check if a certain date is in the past, I realized the `Date` class can be compared normally. Whoops! That's okay, this solution is significantly more elegant. There are some restrictions on comparing dates. If you want to know more about them, [check this out](https://stackoverflow.com/questions/492994/compare-two-dates-with-javascript).
+Next, we will be comparing dates. After creating a bit of a complex algorithm to check if a certain date is in the past, I realized the `Date` class can be compared normally. This solution is significantly more elegant. There are some restrictions on comparing dates...if you want to know more about them, [check this out](https://stackoverflow.com/questions/492994/compare-two-dates-with-javascript)!
 ```javascript
 if(reserveDate < todaysDate) {
 	foundErrors.push({ message: "Reservations cannot be made in the past." });
@@ -511,7 +522,7 @@ if(reserveDate < todaysDate) {
 We should now successfully be finding these errors, but as of right now, we're not doing anything with them. The reservation will still submit normally, no matter what. We will need to hook it up with the rest of the `NewReservation` component.
 ```javascript
 // my solution involves creating a new state that will contain the errors
-const [dateErrors, setDateErrors] = useState([]);
+const [errors, setErrors] = useState([]);
 ```
 
 We'll have the validation function set its found errors into the state. If there were no errors, it'll remain an empty array.
@@ -519,7 +530,7 @@ We'll have the validation function set its found errors into the state. If there
 function validateDate() {
 	// ...
 
-	setDateErrors(foundErrors);
+	setErrors(foundErrors);
 }
 ```
 
@@ -542,7 +553,7 @@ Great! I want to go add those return statements I was talking about.
 function validateDate() {
 	// ...
 
-	setDateErrors(foundErrors);
+	setErrors(foundErrors);
 
 	// we can use our foundErrors array to check if there were any problems.
 	if(foundErrors.length > 0) {
@@ -578,6 +589,128 @@ return (
 All my front-end tests for US-02 are passing! Time to see it in action:
 
 ![new reservations date errors example](https://user-images.githubusercontent.com/64234681/117870533-15a28680-b251-11eb-9f0d-a3252f8a1d02.gif)
+
+---
+
+# 3 : **US-03 - Create reservation within eligible timeframe (front end)**
+This user story is exactly like the previous one except with the time instead of the date. We'll mostly keep working within the same file with the same validation function. Let's go!
+
+---
+
+## *(3.1) Tests*
+- [X] displays an error message if reservation time is before 10:30 AM
+- [X] displays an error message if reservation time is too close to close time
+- [X] displays an error message if reservation time is after the close time
+
+---
+
+## *(3.2) Time is in the past*
+Let's talk about date strings. They look like this: `2021-05-11T01:48:04.123`. The date YYYY-MM-DD goes first, then a capital letter T, then the time in HH:MM:SS:XXX, where XXX is milliseconds ranging from 000 - 999. Knowing this, we can change how we initialize our `Date` object so we can utilize time in our validation function as well.
+```javascript
+// i changed the constructor to be a date string with time included
+const reserveDate = new Date(`${formData.reservation_date}T${formData.reservation_time}:00.000`);
+```
+
+The best part is, this small change still works on this piece of code! If you try to make a reservation for today at 12:00pm when the time is already 12:01pm, this error message will pop up.
+```javascript
+// this comparison still works, because it is taking account time as well now
+if(reserveDate < todaysDate) {
+	foundErrors.push({ message: "Reservation cannot be made: Date is in the past." });
+}
+```
+
+---
+
+## *(3.3) Time constraints*
+The rest of this user story is easy to implement. We set up some conditions and check to see if any of them are triggered.
+```javascript
+function validateDate() {
+	const reserveDate = new Date(`${formData.reservation_date}T${formData.reservation_time}:00.000`);
+	const todaysDate = new Date();
+	
+	const foundErrors = []
+
+	if(reserveDate.getDay() === 2) {  
+		foundErrors.push({ message: "Reservation cannot be made: Restaurant is closed on Tuesdays." });
+	}
+
+	if(reserveDate < todaysDate) {
+		foundErrors.push({ message: "Reservation cannot be made: Date is in the past." });
+	}
+
+	// in english: if it is before 10:30am...
+	// in code: if the hour is not yet 10 or the hour is 10 but below 30 minutes...
+	if(reserveDate.getHours() < 10 || (reserveDate.getHours() === 10 && reserveDate.getMinutes() < 30)) {
+		foundErrors.push({ message: "Reservation cannot be made: Restaurant is not open until 10:30AM." });
+	}
+	
+	// in english: if it is after 10:30pm...
+	// if the hour is after 22 or the hour is 22 and after 30 minutes...
+	else if(reserveDate.getHours() > 22 || (reserveDate.getHours() === 22 && reserveDate.getMinutes() >= 30)) {
+		foundErrors.push({ message: "Reservation cannot be made: Restaurant is closed after 10:30PM." });
+	}
+	
+	// in english: if it is after 9:30pm...
+	// if the hour is after 21 or the hour is 21 and after 30 minutes...
+	else if(reserveDate.getHours() > 21 || (reserveDate.getHours() === 21 && reserveDate.getMinutes() > 30)) {
+		foundErrors.push({ message: "Reservation cannot be made: Reservation must be made at least an hour before closing (10:30PM)." })
+	}
+	
+	setErrors(foundErrors);
+
+	if(foundErrors.length > 0) {
+		return false;
+	}
+	return true;
+}
+```
+
+Errors working as expected!
+
+![new-reservation-time-errors-example](https://user-images.githubusercontent.com/64234681/117885032-2ad3e100-b262-11eb-9a83-064bef47f23b.gif)
+
+---
+
+## *(3.X - Optional) Form validation*
+While we're still working on this form, I think it's important for the form to show an error if fields are left blank. I won't go in-depth about my process, since it isn't connecte to a certain test, but you can check out how I did it here.
+```javascript
+function handleSubmit(event) {
+	event.preventDefault();
+
+	// i move the foundErrors array in the submit handler so both validation functions can push to the same array
+	const foundErrors = [];
+
+	// i created a validateFields function. you can see i now pass foundErrors as an argument
+	if(validateFields(foundErrors) && validateDate(foundErrors)) {
+		history.push(`/dashboard?date=${formData.reservation_date}`);
+	}
+
+	// this also used to be inside of validateDate(), now moved here.
+	setErrors(foundErrors);
+}
+
+// sparkly new validation function
+function validateFields(foundErrors) {
+	for(const field in formData) {
+		if(formData[field] === "") {
+			foundErrors.push({ message: `${field.split("_").join(" ")} cannot be left blank.`})
+		}
+	}
+
+	if(formData.people <= 0) {
+		foundErrors.push({ message: "Party must be a size of at least 1." })
+	}
+
+	if(foundErrors.length > 0) {
+		return false;
+	}
+	return true;
+}
+```
+
+Here's what this looks like:
+
+![new-reservation-field-validation-example](https://user-images.githubusercontent.com/64234681/117885758-147a5500-b263-11eb-9ced-c667421f2fbf.gif)
 
 ---
 
