@@ -32,6 +32,17 @@ If I significantly edited a section after it was already written, there's a chan
 ---
 
 ### *(0.2) My Current Progress on the Capstone*
+Front End:
+- [ ] US-01 Create and list reservations
+- [ ] US-02 Create reservation on a future, working date
+- [ ] US-03 Create reservation within eligible timeframe
+- [ ] US-04 Seat reservation
+- [ ] US-05 Finish an occupied table
+- [ ] US-06 Reservation Status
+- [ ] US-07 Search for a reservation by phone number
+- [ ] US-08 Change an existing reservation
+
+Back End:
 - [ ] US-01 Create and list reservations
 - [ ] US-02 Create reservation on a future, working date
 - [ ] US-03 Create reservation within eligible timeframe
@@ -362,24 +373,28 @@ Let's make some buttons back in `reservations/NewReservation`. The `utils` folde
 ```javascript
 // these functions will give the day before, the day today, and the next day, respectively.
 import { previous, today, next } from "../utils/date-time";
+import { useHistory } from "react-router-dom";
 
-// ...
+function Dashboard({ date }) {
+	const history = useHistory();
+	
+	// ...
 
-return (
-	<main>
-		<h1>Dashboard</h1>
-		<div className="d-md-flex mb-3">
-			<h4 className="mb-0">Reservations for {date}</h4>
-		</div>
-		<ErrorAlert error={reservationsError} />
+	return (
+		<main>
+			<h1>Dashboard</h1>
+			<div className="d-md-flex mb-3">
+				<h4 className="mb-0">Reservations for {date}</h4>
+			</div>
+			<ErrorAlert error={reservationsError} />
 
-		{JSON.stringify(reservations)}
+			{JSON.stringify(reservations)}
 
-		<button type="button" onClick={() => history.push(`/dashboard?date=${previous(date)}`)}>Previous</button>
-		<button type="button" onClick={() => history.push(`/dashboard?date=${today()}`)}>Today</button>
-		<button type="button" onClick={() => history.push(`/dashboard?date=${next(date)}`)}>Next</button>
-	</main>
-);
+			<button type="button" onClick={() => history.push(`/dashboard?date=${previous(date)}`)}>Previous</button>
+			<button type="button" onClick={() => history.push(`/dashboard?date=${today()}`)}>Today</button>
+			<button type="button" onClick={() => history.push(`/dashboard?date=${next(date)}`)}>Next</button>
+		</main>
+	);
 ```
 
 Notice I edited the `<h4>` element to show the date. If we go to our web page and test out our buttons, we can see the date actually changing!
@@ -387,3 +402,5 @@ Notice I edited the `<h4>` element to show the date. If we go to our web page an
 ![dashboard buttons example](https://user-images.githubusercontent.com/64234681/117718994-b7fb3500-b191-11eb-8c2c-a7afcd860419.gif)
 
 ---
+
+Looks like you got to the bottom. 0_0 I am updating this guide as I build the program, so hopefully some sections get added soon. You're killing it!
