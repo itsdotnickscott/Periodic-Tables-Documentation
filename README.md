@@ -131,6 +131,7 @@ The testing for this project is a bit more frustrating than what we've dealt wit
 ### *(1.1) Tests*
 You can always look at the test files yourself, but I LOVE having all of the tests in a list for easy reference, so here they are! (tests checked off are tests that are passing for my current code).
 
+`/reservations/new` page
 - [ ] filling and submitting form creates a new reservation and then displays the dashboard for the reservation date
 - [X] canceling form returns to previous page
 
@@ -450,6 +451,7 @@ I didn't record my whole process in this guide. I'm just giving you my current s
 ---
 
 ## *(2.1) Tests*
+`/reservations/new` page
 - [X] displays an error message if the date of the reservation occurs in the past
 - [X] displays an error message if reservation date falls on a Tuesday
 
@@ -611,6 +613,7 @@ This user story is exactly like the previous one except with the time instead of
 ---
 
 ## *(3.1) Tests*
+`/reservations/new` page
 - [X] displays an error message if reservation time is before 10:30 AM
 - [X] displays an error message if reservation time is too close to close time
 - [X] displays an error message if reservation time is after the close time
@@ -728,6 +731,27 @@ function validateFields(foundErrors) {
 Here's what this looks like:
 
 ![new-reservation-field-validation-example](https://user-images.githubusercontent.com/64234681/117885758-147a5500-b263-11eb-9ced-c667421f2fbf.gif)
+
+---
+
+# **4 : US-04 - Seat reservation (front end)**
+
+---
+
+## *(4.1) Tests*
+
+`/tables/new` page
+- [ ] filling and submitting form creates a new table
+- [ ] omitting table_name and submitting does not create a new table
+- [ ] entering a single character table_name and submitting does not create a new table
+- [ ] omitting capacity and submitting does not create a new table
+- [X] canceling form returns to previous page
+
+`/reservations/:reservation_id/seat` page
+- [ ] seating reservation at table #1 makes the table occupied
+
+`/dashboard` page
+- [ ] seat button has href with /reservations/${reservation_id}/seat
 
 ---
 
