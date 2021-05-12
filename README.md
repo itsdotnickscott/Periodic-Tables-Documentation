@@ -759,7 +759,7 @@ Here's what this looks like:
 ---
 
 ## *(4.2) Reuse & Recycle*
-We can easily set up the new table page now that we just worked together on the new reservation page. We can quite literally apply the same logic in a new page. I made a folder called `tables` and a component called `NewTable.js`. I'm not going to go through this step-by-step, but feel free to look at my solution below!
+We can easily set up the new table page now that we just worked together on the new reservation page. We can quite literally apply the same logic in a new page. I made a folder called `tables` and a component called `NewTable.js`. I'm not going to go through this step-by-step, but feel free to look at my solution below! You'll probably noticed I did some copy and pasting...
 ```javascript
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -799,7 +799,7 @@ export default function NewTable() {
 
 		setError(foundError);
 
-		return foundError.length > 0;
+		return foundError.length !== null;
 	}
 
 	return (
