@@ -30,7 +30,7 @@
 # **0 : Introduction**
 Hi everybody! We are SO close to graduating. I am literally SO PROUD of every single one of you. We've (almost) made it through the hell that is Thinkful by Chegg. My hope is that this guide will be able to relieve some of the stress on you and that it pushes you in a comfortable direction. I will be updating this README as I work through the project and will be putting as much here as I can. 
 
-On top of that, you can use the Issues tab if you have ANY (literally any) questions. You can also post suggestions of content to add to the guide for everyone to see. I will try to be as attentive as I can on this repo. If you would ever like to look at [my project repo](https://github.com/itsdotnickscott/periodic-tables), or the [deployed version of my app](https://periodic-tables-frontend-7tiv1r4sx-itsdotnickscott.vercel.app/dashboard), I will be pushing to the repo when I finish checkpoints as frequently as I can. Looking at my code and my process is not cheating! This is software engineering - we don't need to reinvent the wheel. Observe and learn through example. :P Feel free to use that Issues tab to also ask about why I implemented a feature a certain way or how I got around a certain problem.
+On top of that, you can use the Issues tab if you have ANY (literally any) questions. You can also post suggestions of content to add to the guide for everyone to see. I will try to be as attentive as I can on this repo. If you would ever like to look at [my project repo](https://github.com/itsdotnickscott/periodic-tables), or the [deployed version of my app](https://periodic-tables-frontend-7tiv1r4sx-itsdotnickscott.vercel.app/dashboard), I will be pushing to the repo when I finish checkpoints as frequently as I can. Looking at my code and my process is not cheating! This is software engineering - we don't need to reinvent the wheel. Observe and learn through example! :P Feel free to use that Issues tab to also ask about why I implemented a feature a certain way or how I got around a certain problem.
 
 Of course, I am not proclaiming to be any type of expert at this. I am learning just as much as all of you, and I will make mistakes and blunders. It's all part of the coding experience, baby. I recommend you read the instructions first before reading the sections. They'll make a lot more sense in-context!
 
@@ -41,8 +41,8 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
 ### *(0.1) Changelog*
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
 
-#### May 11th
-* Edited all of Section 2. (solution changed)
+**May 11th**
+* Solution changed in Section 2.
 
 ---
 
@@ -81,14 +81,14 @@ The project recommends you deploy early and often. The EASIEST way to do this is
 2. If you cloned the project, then it is possible that the project is still connected to Thinkful's repo. We need to delete the `.git` folder in the directory (NOT `.github`). If you can't find the `.git` folder, go to your File Explorer, and view hidden items. You should be able to see it and delete it.
 3. [Create a project on Vercel](https://vercel.com/new).
 4. Link up your GitHub account if you haven't already.
-5. If everything's good up till this point, you should be able to import your capstone project into vercel.
+5. If everything's good up till this point, you should be able to import your capstone project into Vercel.
 6. Select your personal account.
 7. Select the `back-end` folder, and press 'Continue'.
 8. Blah blah blah options. Name the project so you can tell it is the backend, something like `periodic-tables-backend`.
 9. Deploy, baby!!
 10. After it is deployed, the preview should say something like `{"error":"Path not found: /"}`. Good news: this error is good. It means it deployed correctly.
 11. Time to do the same process but for the `front-end` folder. [Create a project on Vercel again](https://vercel.com/new) and import the same GitHub repo. You don't have to do anything special. You'll notice that the final settings page recognizes that it is a React app. That's neat!
-12. If everything worked out, you should see the base template of the starter project. The BEST part about deploying via GitHub is that Vercel will automatically update your website **every time you push your project into your GitHub repo**. That saves SO MUCH headache from deploying via the command line, at least in my opinion.
+12. If everything worked out, you should see the base template of the starter project. The BEST part about deploying via GitHub is that Vercel will automatically update your website **every time you push your project onto your GitHub repo's main branch**. That saves SO MUCH headache from deploying via the command line, at least in my opinion.
 
 ---
 
@@ -121,7 +121,7 @@ I hope that was easy for you, but it is okay if it isn't yet. You're going to be
 ---
 
 # **1 : US-01 - Create and list reservations (front end)**
-The testing for this project is a bit more frustrating than what we've dealt with before. Running `npm run test:1`, firstly, cannot run at the same time as your servers if you ran `npm run start:dev` (they are on the same port...). Secondly...I have a hard time getting `npm run test:1` to even work. It just crashes, and I'm guessing it's because I haven't done some part of the code yet. (However, I have been successful with `npm run test:1:frontend`.) Thirdly, even when the tests do run, it's sometimes really difficult to see what the tests even are.
+The testing for this project is a bit more frustrating than what we've dealt with before. Running `npm run test:1`, firstly, cannot run at the same time as your servers if you ran `npm run start:dev` (they are on the same port...). Secondly...I have a hard time getting `npm run test:1` to work. It just crashes, and I'm guessing it's because I haven't done some part of the code yet. (However, I have been successful with `npm run test:1:frontend`.)
 
 ---
 
@@ -149,14 +149,16 @@ import React from "react";
 // i named my component NewReservation:
 export default function NewReservation() {
 	return (
-    	// JSX will be placed here as we build our component
+    		// JSX will be placed here as we build our component
 	);
 }
 ```
 
 `/layout/routes.js` - Before we build our page, we need to route it!
 ```javascript
-// code before & after ommited for brevity (from now on, this will be represented by ...)
+import NewReservation from "../reservations/NewReservation";
+
+// code ommited for brevity (from now on, this will be represented by ...)
 
 <Route exact={true} path="/reservations/new">
 	<NewReservation />
@@ -165,10 +167,12 @@ export default function NewReservation() {
 
 `/reservations/NewReservation.js` - Let's make our form and our inputs.
 ```javascript
-// here is what my form looks like
 return (
 	<form>
-		<label htmlFor="first_name">Field Name</label>
+		{ /* use the following as a template for your input fields: */ }
+		<label htmlFor="first_name">First Name:&nbsp;</label>
+		{ /* &nbsp; is a fancy way for HTML to place a space instead. it stands for "non-breakable space". i used it because i found the label and the input box were too close together. */ }
+		
 		<input
 			name="first_name"
 			id=="first_name"
@@ -178,7 +182,7 @@ return (
 			required // this will make the field non-nullable
 		/>
         
-		// now to make the rest of them!
+		{ /* now to make the rest of them! */ }
 	</form>
 );
 ```
@@ -187,10 +191,10 @@ Let's look at some helpful input types:
 * "text" - value is a string
 * "number" - value is a number
 * "tel" - value is a phone number (i'd suggest looking up the [pattern attribute](https://www.w3schools.com/tags/att_input_pattern.asp) as well)
-* "date" - string
-* "time" - string
+* "date" - string formatted as YYYY-MM-DD
+* "time" - string formatted as HH:MM
 
-Let's make some buttons.
+Let's make some buttons!
 ```javascript
 <form>
 	// ...
@@ -206,7 +210,7 @@ Byotiful.
 ### *(1.3) Dipping our toes back into React*
 *shudder* It's React...
 
-Let's start by setting up our form data with the `useEffect` hook.
+Let's start by setting up our form data with the `useState` hook.
 ```javascript
 import React, { useState } from "react";
 
@@ -229,7 +233,7 @@ const [formData, setFormData] = useState({
 });
 
 // ??? why did i use underscore_case here instead of camelCase?
-// all of our <input> fields have a name that uses underscore case. when we are editing the form fields later, we want to be consistent with the field names.
+// all of our <input> fields have a 'name' attribute that uses underscore case. when we are editing the form fields later, we want to be consistent with the field names.
 ```
 
 Everytime a user makes a change to an input, we want to record that as a state.
@@ -246,7 +250,6 @@ Recall that we left some attributes blank on the inputs...`onChange` and `value`
 ```javascript
 // example:
 <input
-
 	// ...
     
 	onChange={handleChange} // the function we just made! the onChange attribute will automatically pass the `event` argument based off of which input was clicked
@@ -256,7 +259,7 @@ Recall that we left some attributes blank on the inputs...`onChange` and `value`
 
 ```
 
-Both the cancel and submit button will be redirecting people. Let's refresh ourselves with our useHistory hook:
+Both the cancel and submit button will be redirecting people. Let's refresh ourselves with the `useHistory` hook:
 ```javascript
 import { useHistory } from "react-router-dom";
 
@@ -265,10 +268,11 @@ export default function NewReservation() {
 
 	// example code:
 	// recall how to bring back someone back a page:
-	history.go(-1);
+	// history.go(-1);
     
 	// you can also call:
-	history.goBack(); // this is the same as the one above!
+	// history.goBack(); 
+	// this is the same as the one above!
     
 	// great, let's put this into our onClick handler for cancel!
 	<button type="button" onClick={history.goBack}>Cancel</button>
@@ -276,16 +280,16 @@ export default function NewReservation() {
 
 As of now, the cancel button test is passing for me.
 
-Let's make our submit handler. As of right now, I'm not going to be sending this form anywhere, because there's no where to send it to! We'll come back to this in the future.
+Let's make our submit handler. As of right now, we're not going to be sending this form anywhere, because there's no where to send it to. We'll come back to this in the future.
 ```javascript
 function handleSubmit(event) {
 	event.preventDefault(); // the normal submit refreshes the entire page. we don't want that to happen!
   
-	// in the future, we will be editing this submit handler to actually post the request to the database. i'm not worried about it right now though!
+	// in the future, we will be editing this submit handler to actually post the request to the database. i'm not worried about it right now though.
   
 	// the submit button will be redirecting the user to the dashboard on a specific date.
 	// the dashboard will have a URL query with the date. it looks like /dashboard?date=2035-12-30
-	// so i will be replicating this here. on top of this, i imported one of the util functions in the utils folder. yeesss! less code for me to write.
+	// so i will be replicating this here. on top of this, i imported one of the util functions, formatReservationDate, in the utils folder. yeesss! less code for me to write.
 	// the push function literally "pushes" the user to whatever path you give.
 	history.push(`/dashboard?date=${formatReservationDate(formData.reservation_date)}`);
 }
@@ -296,7 +300,7 @@ function handleSubmit(event) {
 <button type="submit" onClick={handleSubmit}>Submit</button>
 ```
 
-If you run your tests, you'll see hat the submit test is still failing. It's an async error, so I think this might be because not everything is set up yet. Great job refreshing yourselves with React. It's been a bit.
+If you run your tests, you'll see that the submit test is still failing. It's an async error, so I think this might be because not everything is set up yet. Great job refreshing yourselves with React. It's been a bit.
 
 Here's what my page looks like now. Ugly and unformatted! :)
 
@@ -305,26 +309,28 @@ Here's what my page looks like now. Ugly and unformatted! :)
 ---
 
 ## *(1.4) Dashboard*
-Thinkful is hiding a lot of information in different files. Keep in mind the starter code that is already written for you because they WILL be helpful. Particularly, the `utils` folder. Let's go look at how we can use some of them!
+Thinkful is hiding a lot of information in different files. Keep in mind the starter code that is already written for you because they WILL be helpful...particularly, the `utils` folder. Let's go look at how we can use some of them!
 
-You'll see in the Dashboard that a lot of it is already set up. It's great because it means we don't have to figure out how to do certain tasks, and it sucks because we don't quite know what it even does right now. Let's go over the existing code together and point out some important bits of code.
+You'll see in `/dashboard/Dashboard` that a lot of it is already set up. It's great because it means we don't have to figure out how to do certain tasks, and it sucks because we don't quite know what it even does right now. Let's go over the existing code together and point out some important bits of code.
 
 ```javascript
-// at the top of the function, we can see that there are two states being stored. the reservations state is especially important because it is holding the response from our API! (right now the API returns nothing; we haven't made it yet)
+// at the top of the function, we can see that there are two states being stored. the 'reservations' state is especially important because it is holding the response from our API! (right now the API returns nothing; we haven't made it yet)
 const [reservations, setReservations] = useState([]);
 const [reservationsError, setReservationsError] = useState(null);
 
-// useEffect will call loadDashboard every time the date prop changes
+// useEffect review! useEffect(func, depen) - func is a function that is called when the page first renders, and after every time one of the variables in the dependency array changes.
+// a dependency array of [] will only be ran once.
+// in this case, useEffect will call the loadDashboard function every time the 'date' variable changes
 useEffect(loadDashboard, [viewDate]);
 
 function loadDashboard() {
-	// recall that the abort controller is used for async calls. it is used to avoid race conditions!
+	// recall that the abort controller is used for async calls. it is used to avoid race conditions.
 	const abortController = new AbortController();
 	
 	// no errors
 	setReservationsError(null);
 	
-	// time to make our API call! the first parameter { date } is the search parameter for the database. we will come back to this function later.
+	// time to make our API call! the first parameter { date } is the search parameter for the database, and also the value of 'date'.
 	listReservations({ date }, abortController.signal)
 		.then(setReservations)
 		.catch(setReservationsError);
@@ -347,7 +353,9 @@ return (
 );
 ```
 
-Firstly, we have to acknowledge the query in the URL. If there is no date query, today's date will be used. You can see this happening in `/layout/Routes.js` at the `<Dashboard />` component. Luckily, our handy `utils` folder has a custom React hook to grab the query! Let's check it out in `/utils/useQuery.js`:
+Firstly, we have to acknowledge the query in the URL. If there is no date query, today's date will be used. You can see the initial `<Dashboard />` component in `/layout/Routes.js` passes the current date as a prop.
+
+React doesn't have a built in query getter. Luckily, our handy `utils` folder has a custom React hook to grab the query. Let's check it out in `/utils/useQuery.js`:
 ```javascript
 /**
  * useQuery is a custom hook that makes use of the useLocation and the URL class to parse the query parameters.
@@ -365,7 +373,7 @@ function useQuery() {
 }
 ```
 
-We don't need to fully understand how the function works to use it! Let's go implement it in `layout/Routes.js`!
+We don't need to fully understand how the function works to use it! Let's go implement it in `layout/Routes.js`:
 ```javascript
 // i chose this file because this is where the dashboard is routed from.
 import useQuery from "../utils/useQuery";
@@ -418,9 +426,9 @@ Notice I edited the `<h4>` element to show the date. If we go to our web page an
 ---
 
 # **2 : US-02 - Create reservation on a future, working date (front end)**
-For this user story, we will be adding some features onto our NewReservation component. We will be validating the reservation date after a user tries to submit the form. Let's head on over to `/reservations/NewReservation.js`! (This is where I organized this file - yours might be in a different location / have a different name.)
+For this user story, we will be adding some features onto our `NewReservation component`. We will be validating the reservation date after a user tries to submit the form. Let's head on over to `/reservations/NewReservation.js`! (This is where I organized this file - yours might be in a different location / have a different name.)
 
-I'd like to note that for this section, I spent a bit coming up with a solid solution to this problem. The Date class CAN be tricky, since dates are treated as if they are a UTC time. However, sometimes JavaScript will use your local time zone at times to interpret them. We have to be careful what "time zone" we are working in (I'm referring to UTC as a time zone even though it technically isn't).
+I'd like to note that for this section, I spent a bit coming up with a solid solution to this problem. The `Date` class CAN be tricky, since dates are treated as if they are a UTC time. However, sometimes JavaScript will use your local time zone at times to interpret them. We have to be careful what "time zone" we are working in (I'm referring to UTC as a time zone even though it technically isn't).
 
 Looking at the [Date class documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) was helpful during this user story.
 
@@ -432,7 +440,7 @@ I'm deciding to work in the user's time zone so we can base everything off of th
 
 I didn't record my whole process in this guide. I'm just giving you my current solutions to the checkpoints. What might seem like a simple solution took a good bit of refactoring and simplifying. If you'd like to take a good shot at this before reading, please do! Otherwise, let's go solve this thing!
 
-> EDIT (5/11): If you read this before it was changed, my old solution worked completely in UTC. After moving onto the third user story, I realized that working in the user's local time zone might be easier in the long run.
+> EDIT (5/11): If you read this before it was changed, my old solution worked in UTC. After moving onto the third user story, I realized that working in the user's local time zone might be easier in the long run. Who knows...maybe I'll come back and change this back to UTC. Regardless, the logic remains completely the same no matter which path we choose. Just stay consistent.
 
 ---
 
@@ -443,7 +451,7 @@ I didn't record my whole process in this guide. I'm just giving you my current s
 ---
 
 ## *(2.2) Tuesdays*
-Second worst only to Mondays. Looks like the restaurant is closed on Tuesdays, and we should display errors to the user if they try to reserve on a Tuesday.
+Tuesdays...second worst only to Mondays. Looks like the restaurant is closed on Tuesdays, and we should display errors to the user if they try to reserve on a Tuesday.
 
 `/layout/ErrorAlert.js` - Before we start writing our validation code, let's take a look at the `ErrorAlert` component that was included with the starter code.
 ```javascript
@@ -470,15 +478,15 @@ This component was also used in the `Dashboard` component when there is an error
 
 `reservations/NewReservation.js` - Let's check to see if the reservation date is a Tuesday!
 ```javascript
-// i'm going to create my own function here, specialized to validating the reservation date.
+// i'm going to create my own function here, specialized to validate the reservation date.
 function validateDate() {
 	// we will be using the built-in Date class to be comparing our dates
 	// previously in this file, we stored the form's input values in a react state called formData
 	// we can access that here, and use the Date constructor
-	// the string is already stored in the format YYYY-MM-DD, so we don't have to do anything special to the string...at least not yet.
+	// the string is already stored in the format YYYY-MM-DD, so we don't have to do anything special to the string...at least not yet (we'll touch on this in the next user story).
 	const reserveDate = new Date(formData.reservation_date);
 	
-	// it's possible we can have multiple errors when a date is submitted. i am going to initialize an array to hold these errors
+	// it's possible we can have multiple errors when a date is submitted. i am going to initialize an array to hold these errors.
 	const foundErrors = [];
 	
 	// the Date class has many functions, one of which returns the day (0 is sunday, 6 is saturday)
@@ -509,7 +517,7 @@ function validateDate() {
 }
 ```
 
-Next, we will be comparing dates. After creating a bit of a complex algorithm to check if a certain date is in the past, I realized the `Date` class can be compared normally. This solution is significantly more elegant. There are some restrictions on comparing dates...if you want to know more about them, [check this out](https://stackoverflow.com/questions/492994/compare-two-dates-with-javascript)!
+Next, we will be comparing dates. After creating a bit of a complex algorithm to check if a certain date is in the past, I realized the `Date` class can be compared normally with <, >, etc. This solution is significantly more elegant. There are some restrictions on comparing dates...if you want to know more about them, [check this out](https://stackoverflow.com/questions/492994/compare-two-dates-with-javascript)!
 ```javascript
 if(reserveDate < todaysDate) {
 	foundErrors.push({ message: "Reservations cannot be made in the past." });
@@ -611,12 +619,16 @@ Let's talk about date strings. They look like this: `2021-05-11T01:48:04.123`. T
 const reserveDate = new Date(`${formData.reservation_date}T${formData.reservation_time}:00.000`);
 ```
 
-The best part is, this small change still works on this piece of code! If you try to make a reservation for today at 12:00pm when the time is already 12:01pm, this error message will pop up.
+The best part is, this small change still works on this piece of code that compares the dates! If you try to make a reservation for today at 12:00pm when the time is already 12:01pm, this error message will pop up.
 ```javascript
 // this comparison still works, because it is taking account time as well now
 if(reserveDate < todaysDate) {
 	foundErrors.push({ message: "Reservation cannot be made: Date is in the past." });
 }
+
+// ??? how are dates compared?
+// every Date is stored as a number that represents the number of milliseconds that have elapsed since January 1, 19-whatever.
+// that way, we know if a date is in the past if there are less milliseconds in one date than the other.
 ```
 
 ---
@@ -672,7 +684,7 @@ Errors working as expected!
 ---
 
 ## *(3.X - Optional) Form validation*
-While we're still working on this form, I think it's important for the form to show an error if fields are left blank. I won't go in-depth about my process, since it isn't connecte to a certain test, but you can check out how I did it here.
+While we're still working on this form, I think it's important for the form to show an error if fields are left blank. I won't go in-depth about my process, since it isn't connected to a certain test, but you can check out how I did it here.
 ```javascript
 function handleSubmit(event) {
 	event.preventDefault();
