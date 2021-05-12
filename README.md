@@ -41,6 +41,9 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
 ### *(0.1) Changelog*
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
 
+**May 12th**
+* 1.3 at `handleSubmit` function: Removed the use of `formatReservationDate()`
+
 **May 11th**
 * Solution changed in Section 2.
 
@@ -289,9 +292,9 @@ function handleSubmit(event) {
   
 	// the submit button will be redirecting the user to the dashboard on a specific date.
 	// the dashboard will have a URL query with the date. it looks like /dashboard?date=2035-12-30
-	// so i will be replicating this here. on top of this, i imported one of the util functions, formatReservationDate, in the utils folder. yeesss! less code for me to write.
+	// so i will be replicating this here.
 	// the push function literally "pushes" the user to whatever path you give.
-	history.push(`/dashboard?date=${formatReservationDate(formData.reservation_date)}`);
+	history.push(`/dashboard?date=${formData.reservation_date}`);
 }
 
 // ...
@@ -299,6 +302,8 @@ function handleSubmit(event) {
 // time to add our function to the submit button!
 <button type="submit" onClick={handleSubmit}>Submit</button>
 ```
+
+> EDIT (5/12): I took out the use of formatReservationDate() because it wasn't working. You can just use the raw `formData.reservation_date`.
 
 If you run your tests, you'll see that the submit test is still failing. It's an async error, so I think this might be because not everything is set up yet. Great job refreshing yourselves with React. It's been a bit.
 
