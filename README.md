@@ -25,6 +25,10 @@
 	* [(3.3) Time constraints](#33-time-constraints)
 	* [(3.X - Optional) Form validation](#3x---optional-form-validation)
 
+* [**4 : US-04 - Seat reservation (front end)**](#4--us-04---seat-reservation-front-end)
+	* [(4.1) Tests](#41-tests)
+	* [(4.2) Reuse & Recycle](#42-reuse--recycle)
+
 ---
 
 # **0 : Introduction**
@@ -739,12 +743,11 @@ Here's what this looks like:
 ---
 
 ## *(4.1) Tests*
-
 `/tables/new` page
 - [ ] filling and submitting form creates a new table
-- [ ] omitting table_name and submitting does not create a new table
-- [ ] entering a single character table_name and submitting does not create a new table
-- [ ] omitting capacity and submitting does not create a new table
+- [X] omitting table_name and submitting does not create a new table
+- [X] entering a single character table_name and submitting does not create a new table
+- [X] omitting capacity and submitting does not create a new table
 - [X] canceling form returns to previous page
 
 `/reservations/:reservation_id/seat` page
@@ -752,6 +755,85 @@ Here's what this looks like:
 
 `/dashboard` page
 - [ ] seat button has href with /reservations/${reservation_id}/seat
+
+---
+
+## *(4.2) Reuse & Recycle*
+We can easily set up the new table page now that we just worked together on the new reservation page. We can quite literally apply the same logic in a new page. I made a folder called `tables` and a component called `NewTable.js`. I'm not going to go through this step-by-step, but feel free to look at my solution below!
+```javascript
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import ErrorAlert from "../layout/ErrorAlert"
+
+export default function NewTable() {
+	const history = useHistory();
+
+	const [error, setError] = useState([]);
+	const [formData, setFormData] = useState({
+		// initial (default) data
+		table_name: "",
+		capacity: 1,
+	});
+
+	function handleChange({ target }) {
+		setFormData({ ...formData, [target.name]: target.value });
+	}
+
+	function handleSubmit(event) {
+		event.preventDefault();
+
+		if(validateFields()) {
+			history.push(`/dashboard`);
+		}
+	}
+
+	function validateFields() {
+		let foundError = null;
+
+		if(formData.table_name === "" || formData.capacity === "") {
+			foundError = { message: "Please fill out all fields." };
+		}
+		else if(formData.table_name.length < 2) {
+			foundError = { message: "Table name must be at least 2 characters." };
+		}
+
+		setError(foundError);
+
+		return foundError.length > 0;
+	}
+
+	return (
+		<form>
+			<ErrorAlert error={error} />
+
+			<label htmlFor="table_name">Table Name:&nbsp;</label>
+			<input 
+				name="table_name"
+				id="table_name"
+				type="text"
+				minLength="2"
+				onChange={handleChange}
+				value={formData.table_name}
+				required
+			/>
+
+			<label htmlFor="capacity">Capacity:&nbsp;</label>
+			<input 
+				name="capacity"
+				id="capacity"
+				type="number"
+				min="1"
+				onChange={handleChange}
+				value={formData.capacity}
+				required
+			/>
+
+			<button type="submit" onClick={handleSubmit}>Submit</button>
+			<button type="button" onClick={history.goBack}>Cancel</button>
+		</form>
+	);
+}
+```
 
 ---
 
