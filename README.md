@@ -835,6 +835,177 @@ export default function NewTable() {
 }
 ```
 
+Here's a screenshot of my new tables page:
+
+![new-table](https://user-images.githubusercontent.com/64234681/118416222-69eba300-b663-11eb-8ba0-c67abfec796d.png)
+
+---
+
+## *(4.3) Adding to the dashboard*
+I haven't migrated or seeded anything yet. It might actually be a good idea to go and do that right now, but I am feeling lazy so I'm going to keep fleshing out the front-end. The problem is, I don't know if it works because there is no data being fetched yet. So, these solutions are relative right now, and they're not going to pass any of the tests (yet).
+
+`/dashboard/Dashboard.js` - I'm going to be creating some HTML tables to organize an area for all of the reservations and then an area for all of the tables. I'm now going to be taking out the `JSON.stringify` that was in the original starter code, since we will now be refactoring it to a more easily-understood format.
+```javascript
+// although unused right now, i thought it would be important to set up some states for our new "tables" section we will be making
+const [tables, setTables] = useState([]);
+const [tablesError, setTablesError] = useState(null);
+
+// ...
+
+return (
+	<main>
+		<h1>Dashboard</h1>
+
+		<h4 className="mb-0">Reservations for {date}</h4>
+			
+		<ErrorAlert error={reservationsError} />
+
+		{ /* although i'm not caring too much right now about what the table looks like, i'm still utilizing some of the classes from Bootstrap to format it in a nice way. */ }
+		<table class="table">
+			{ /* "thead" is the table header, meant for the column labels */ }
+			<thead>
+				{ /* "tr" means table row */ }
+				<tr>
+					// "th" is a table heading. they all have a scope="col", which is used primarily for Bootstrap. (it will basically <strong> it)
+					<th scope="col">ID</th>
+					<th scope="col">First Name</th>
+					<th scope="col">Last Name</th>
+					<th scope="col">Mobile Number</th>
+					<th scope="col">Time</th>
+					<th scope="col">People</th>
+					<th scope="col">Status</th>
+					<th scope="col">Seat Table</th>
+				</tr>
+			</thead>
+			
+			{ /* "tbody" is the table body. */ }
+			<tbody>
+				{ /* i am currently planning on creating a special component that will format the reservation information as a table row (<tr>) */ }
+			</tbody>
+		</table>
+      
+      		{ /* using the same principles as the code up above, we can make a section for the tables as well: */ }
+		<h4 className="mb-0">Tables</h4>
+
+		<ErrorAlert error={tablesError} />
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">Table Name</th>
+					<th scope="col">Capacity</th>
+					<th scope="col">Status</th>
+				</tr>
+			</thead>
+				
+			<tbody>
+				{ /* likewise to the other <tbody>, we will be making a new component that will format the table information. */ }
+			</tbody>
+		</table>
+		
+		<button type="button" onClick={() => history.push(`/dashboard?date=${previous(date)}`)}>Previous</button>
+		<button type="button" onClick={() => history.push(`/dashboard`)}>Today</button>
+		<button type="button" onClick={() => history.push(`/dashboard?date=${next(date)}`)}>Next</button>
+    </main>
+  );
+}
+```
+
+Here is what the website looks like:
+
+![dashboard-with-tables](https://user-images.githubusercontent.com/64234681/118416165-314bc980-b663-11eb-88bd-232070fc4744.png)
+
+---
+
+## *(4.4) Table row components*
+In the previous section, I mentioned making some new components that will be formatting the information grabbed from the API.
+
+I will start by working on the reservation rows. In `/dashboard`, I made a component called `ReservationRow.js`.
+```javascript
+import React from "react";
+
+// note that i pass in a reservation object as a prop:
+export default function ReservationRow({ reservation }) {
+	// returning "null" inside of a react component basically means return nothing. however, we always want to make sure we return null if we intend to return nothing.
+	if(!reservation) return null;
+
+	return (
+		<tr>
+			{ /* because the reservation id is a primary key, i figured i would make this a sort of table header (recall it basically just makes the test bold */ }
+			<th scope="row">{reservation.reservation_id}</th>
+			
+			{ /* for everything else, i use "td", which means table data. */ }
+			<td>{reservation.first_name}</td>
+			<td>{reservation.last_name}</td>
+			<td>{reservation.mobile_number}</td>
+			<td>{reservation.reservtion_time}</td>
+			<td>{reservation.people}</td>
+			<td>{reservation.status}</td>
+			
+			{ /* lastly, the instructions call for a "seat" button. here is where i put it: */ }
+			<td>
+				<a href={`/reservations/${reservation.reservation_id}/seat`}>
+					<button type="button">Seat</button>
+				</a>
+			</td>
+		</tr>
+	);
+}
+```
+
+And now, I want to do the same thing inside of a new component `/dashboard/TableRow.js`. We can just use the same logic as above.
+```javascript
+import React from "react";
+
+export default function TableRow({ table }) {
+	if(!table) return null;
+
+	return (
+		<tr>
+			<th scope="row">{table.table_id}</th>
+			<td>{table.table_name}</td>
+			<td>{table.capacity}</td>
+			
+			{ /* the instructions say the tests are looking for this data-table-id-status, so be sure to include it. */ }
+			<td data-table-id-status={table.table_id}>{table.status}</td>
+		</tr>
+	);
+}
+```
+
+Lastly, we want to hook these components up inside of `/dashboard/Dashboard.js`. Make sure to import your components first!
+```javascript
+// if you read my previous sections, i use the same logic of displaying multiple error components here:
+const reservationsJSX = () => {
+	return reservations.map((reservation) => 
+		<ReservationRow key={reservation.reservation_id} reservation={reservation} />);
+};
+
+// and here:
+const tablesJSX = () => {
+	return tables.map((table) => 
+		<TableRow key={table.table_id} table={table} />);
+};
+
+// and to add them inside of our <tbody> tags:
+return (
+	{ /* ... */ }
+	
+	<tbody>
+		{reservationsJSX()}
+	</tbody>	
+	
+	{ /* ... */ }
+	
+	<tbody>
+		{tablesJSX()}
+	</tbody>
+);
+```
+
+Like I said, I haven't migrated my tables yet (and I probably won't write a section on it until I'm about done with the front end). So, I can't really test to see if my code is working. I have a feeling they're alright though. ;)
+
 ---
 
 Looks like you got to the bottom. 0_0 I am updating this guide as I build the program, so hopefully some sections get added soon. You're killing it!
