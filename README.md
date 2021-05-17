@@ -28,6 +28,10 @@
 * [**4 : US-04 - Seat reservation (front end)**](#4--us-04---seat-reservation-front-end)
 	* [(4.1) Tests](#41-tests)
 	* [(4.2) Reuse & Recycle](#42-reuse--recycle)
+	* [(4.3) Adding to the dashboard](#43-adding-to-the-dashboard)
+	* [(4.4) Table row components](#44-table-row-components)
+	* [(4.X - Optional) Moving the API calls](#4x---optional-moving-the-api-calls)
+	* [(4.5) Seating a reservation](#45-seating-a-reservation)
 
 ---
 
@@ -40,13 +44,20 @@ Of course, I am not proclaiming to be any type of expert at this. I am learning 
 
 If I've been a help to you at all during this cohort, I would greatly appreciate some LinkedIn endorsements? Is this basically me asking you to smash that like button?
 
+> EDIT (5/17): I was asked a question about how I was handling the tests during this capstone. Here was my answer about my current workflow...feel free to adopt the same idea if it suits you.
+>
+> "im very loosely worrying about the tests right now. i look at them and run them to see what they're generally looking for, but i am not going in-depth into any one test for a bit. im planning on building out the rest of the functionality using just the instructions, and if i pass tests along the way, yay. otherwise, i ignore them, lol. i'll go back and care about the tests when i feel like i have a solid minimum viable product (mvp)"
+
 ---
 
 ### *(0.1) Changelog*
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
 
+**May 17th**
+* Included additional workflow information in the introduction.
+
 **May 12th**
-* 1.3 at `handleSubmit` function: Removed the use of `formatReservationDate()`
+* 1.3 at `handleSubmit` function: Removed the use of `formatReservationDate()`.
 
 **May 11th**
 * Solution changed in Section 2.
@@ -939,7 +950,7 @@ export default function ReservationRow({ reservation }) {
 			<td>{reservation.first_name}</td>
 			<td>{reservation.last_name}</td>
 			<td>{reservation.mobile_number}</td>
-			<td>{reservation.reservtion_time}</td>
+			<td>{reservation.reservation_time}</td>
 			<td>{reservation.people}</td>
 			<td>{reservation.status}</td>
 			
@@ -1005,6 +1016,201 @@ return (
 ```
 
 Like I said, I haven't migrated my tables yet (and I probably won't write a section on it until I'm about done with the front end). So, I can't really test to see if my code is working. I have a feeling they're alright though. ;)
+
+---
+
+## *(4.X - Optional) Moving the API calls*
+This section is completely optional, but my code is going to keep building off of the work that I do in this section, so I think it is an important section to read nevertheless.
+
+> *What am I trying to solve?*
+
+Right now, the code that was included in the starter code only makes API calls inside of the `Dashboard` component. I want to move this call up to the dashboard's parent, which happens to be `/layout/Routes.js`.
+
+> *Why am I moving the API call up to the `Dashboard`'s parent?*
+
+It seems like the `Routes` component is the daddy of all the other components (that is, all other components we will be working on. it should be noted that `Routes`' parent component is `/layout/Layout.js`, but we don't need to worry about this file at all). What I want to avoid in the future is, when other components need to make API calls, re-coding what is already written inside of `dashboard/Dashboard.js`. And, unless that component is a child of `Dashboard`, we will be writing redundant and extreneous code.
+
+> *Are there different solutions?*
+
+Of course there are. You could not do this at all...I mean, why do more work than you need to do? Plus, I'm sure Thinkful put the API call in the `Dashboard` for a reason. I'm choosing to move the API call code inside of `Dashboard` into `Routes`, but you could also completely put the API calls into its own file and import it as you wish to your different components. Is there a better solution? Not really. Do whatever you feel comfortable and happy with.
+
+With the boring set-up text out of the way, let's see the snippet of code I am planning on removing from my `Dashbaord` to `Routes`:
+```javascript
+const [reservations, setReservations] = useState([]);
+const [reservationsError, setReservationsError] = useState(null);
+
+const [tables, setTables] = useState([]);
+const [tablesError, setTablesError] = useState(null);
+
+useEffect(loadDashboard, [date]);
+
+function loadDashboard() {
+	const abortController = new AbortController();
+
+	setReservationsError(null);
+
+	listReservations({ date: date }, abortController.signal)
+		.then(setReservations)
+		.catch(setReservationsError);
+
+	return () => abortController.abort();
+}
+```
+
+Now, since all of this information got ripped out of `Dashboard`, we need to pass this information in the form of props. Now, the daddy component (`Routes`) is able to pass the data from the API calls down as props. This is exactly what I wanted to happen. The parent holds all the information and will pass it down as read-only props to its children.
+```javascript
+<Route path="/dashboard">
+	<Dashboard 
+		date={date ? date : today()}
+		reservations={reservations}
+		reservationsError={reservationsError}
+		tables={tables}
+		tablesError={tablesError}
+	/>
+</Route>
+```
+
+---
+
+## *(4.5) Seating a reservation*
+Our next task is to implement a component for seating a reservation at a certain table. Here is me setting up the route in `/layout/Routes.js`:
+```javascript
+<Route exact={true} path="/reservations/:reservation_id/seat">
+	<SeatReservation
+		reservations={reservations}
+		tables={tables}
+		
+		{ /* how did I pass the reservations and tables as props? */ }
+		{ /* read how I did it in section 4.X! */ }
+	/>
+</Route>
+```
+
+Setting up a new component in `/reservations/SeatReservation.js`:
+```javascript
+import React from "react";
+
+export default function SeatReservation({ reservations, tables }) {
+	return (
+		// JSX
+	);
+}
+```
+
+Let's first set up our `form` using `select`:
+```javascript
+return (
+	<form>
+		<label htmlFor="table_id">Choose table:</label>
+		<select 
+			name="table_id" 
+			id="table_id"
+		>
+			{ /* our options will go here soon */ }
+		</select>
+
+		<button type="submit" onClick={handleSubmit}>Submit</button>
+		<button type="button" onClick={history.goBack}>Cancel</button>
+	</form>
+);
+```
+
+The `select` tag will set up a drop-down for us. The user will be able to choose an `option` from a given list. Let's go ahead and make those options now.
+```javascript
+// i use the same principles in previous sections in mapping the tables array.
+const tableOptionsJSX = () => {
+	return tables.map((table) => 
+		// make sure to include the value
+		// the option text i have here is required for the tests as included in the instructions
+		<option value={table.table_id}>{table.table_name} - {table.capacity}</option>);
+};
+```
+
+
+
+We will add our new variable to the `return` statement. You will notice I also added a `value` and `onChange` to the `select`. 
+```javascript
+<select 
+	name="table_id" 
+	id="table_id"
+	value={tableId}
+	onChange={handleChange}
+>
+	{tableOptionsJSX()}
+</select>
+```
+
+The value and onChange correspond to the following code:
+```javascript
+export default function SeatReservation({ reservations, tables }) {
+	const history = useHistory();
+	
+	// here are the states we need to keep track of
+	const [tableId, setTableId] = useState(0);
+	const [errors, setErrors] = useState([]);
+
+	// in case the props passed in don't exist
+	if(!tables || !reservations) return null;
+
+	// change handler sets tableId state
+	function handleChange({ target }) {
+		setTableId(target.value);
+	}
+
+	// submit handler does nothing as of yet
+	function handleSubmit(event) {
+		event.preventDefault();
+
+		// we will be creating a validation function as well
+		if(validateSeat()) {
+			history.push(`/dashboard`);
+		}
+	}
+	
+	// validation function uses the same principles from my other vaidation functions in previous sections
+	function validateSeat() {
+		const foundErrors = [];
+
+		// we will need to use the find method here to get the actual table/reservation objects from their ids
+		const foundTable = tables.find((table) => table.table_id === tableId);
+		const foundReservation = reservations.find((reservation) => reservation.reservation_id === reservation_id);
+
+		if(!foundTable) {
+			foundErrors.push("The table you selected does not exist.");
+		}
+		else if(!foundReservation) {
+			foundErrors.push("This reservation does not exist.")
+		}
+		else {
+			if(foundTable.status === "occupied") {
+				foundErrors.push("The table you selected is currently occupied.")
+			}
+
+			if(foundTable.capacity < foundReservation.people) {
+				foundErrors.push(`The table you selected cannot seat ${foundReservation.people} people.`)
+			}
+		}
+
+		setErrors(foundErrors);
+
+		// this conditional will either return true or false based off of whether foundErrors is equal to 0
+		return foundErrors.length === 0;
+		
+		// if you read my previous sections, you will recall that i programmed it like this previously:
+		// if(foundErrors.length > 0) {
+		// 	return false;
+		// }
+		// return true;
+		
+		// both my new return statement and the old return statement do the same thing. i find the one-liner more elegant.
+	}
+	
+	// ...
+```
+
+The final page looks like this...except I haven't set up the back end yet, so there's no tables in the drop-down. Looks like we will be visiting this again in the back end.
+
+![seat-reservation-example](https://user-images.githubusercontent.com/64234681/118546160-6829ea00-b70c-11eb-8340-6e79289a0cab.png)
 
 ---
 
