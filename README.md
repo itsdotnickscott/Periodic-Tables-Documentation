@@ -4,8 +4,8 @@
 	* [(0.1) Changelog](#01-changelog)
 	* [(0.2) My current progress on the capstone](#02-my-current-progress-on-the-capstone)
 	* [(0.3) Starter code won't start](#03-starter-code-wont-start)
-	* [(0.4) Deploying your app](#04-deploying-your-app)
-	* [(0.5) Creating your databases](#05-creating-your-databases)
+	* [(0.X) Deploying your app to Vercel (deprecated)](#0x-deploying-your-app-to-vercel-deprecated)
+	* [(0.4) Creating your databases](#04-creating-your-databases)
   
 * [**1 : US-01 - Create and list reservations (front end)**](#1--us-01---create-and-list-reservations-front-end)
 	* [(1.1) Tests](#11-tests)
@@ -51,6 +51,10 @@
 	* [(8.2) Edit and cancel buttons](#82-edit-and-cancel-buttons)
 	* [(8.3) Edit reservation](#83-edit-reservation)
 
+* [**9 : Setting up the database with Knex**](#9--setting-up-the-database-with-knex)
+	* [(9.1) Migrating](#91-migrating)
+	* [(9.2) Seeding](#92-seeding)
+
 ---
 
 # **0 : Introduction**
@@ -70,6 +74,9 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
 
 ## *(0.1) Changelog*
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
+
+**May 19th**
+* Announced that Vercel is no longer required - 0.4 has been deprecated, but still exists for reference.
 
 **May 17th**
 * Included additional workflow information in the introduction.
@@ -111,24 +118,28 @@ In `./package.json` (make sure you're looking at the file in the root directory)
 
 ---
 
-## *(0.4) Deploying your app*
-The project recommends you deploy early and often. The EASIEST way to do this is by deploying via GitHub, not the commandline.
-1. Initialize and push your app onto a new GitHub repository.
-2. If you cloned the project, then it is possible that the project is still connected to Thinkful's repo. We need to delete the `.git` folder in the directory (NOT `.github`). If you can't find the `.git` folder, go to your File Explorer, and view hidden items. You should be able to see it and delete it.
-3. [Create a project on Vercel](https://vercel.com/new).
-4. Link up your GitHub account if you haven't already.
-5. If everything's good up till this point, you should be able to import your capstone project into Vercel.
-6. Select your personal account.
-7. Select the `back-end` folder, and press 'Continue'.
-8. Blah blah blah options. Name the project so you can tell it is the backend, something like `periodic-tables-backend`.
-9. Deploy, baby!!
-10. After it is deployed, the preview should say something like `{"error":"Path not found: /"}`. Good news: this error is good. It means it deployed correctly.
-11. Time to do the same process but for the `front-end` folder. [Create a project on Vercel again](https://vercel.com/new) and import the same GitHub repo. You don't have to do anything special. You'll notice that the final settings page recognizes that it is a React app. That's neat!
-12. If everything worked out, you should see the base template of the starter project. The BEST part about deploying via GitHub is that Vercel will automatically update your website **every time you push your project onto your GitHub repo's main branch**. That saves SO MUCH headache from deploying via the command line, at least in my opinion.
+## *(0.X) Deploying your app to Vercel (deprecated)*
+> EDIT (5/19): Grey has informed us that we no longer need to deploy to Vercel. It is possible we will deploy to Heroku in the future, but for now, this section is no longer needed.
+
+> Grey: "According to Rich, next week, we should be getting instructions about deploying this app to Heroku. We can ignore the Continuous Integration (CI) tests on github when we push repos up there. If the tests pass locally, keep moving through the user stories until the entire testing suite passes. Apparently, the CI tests weren't originally supposed to be included AND Vercel's "serverless function" infrastructure doesn't work well with the way we build front-ends, so Thinkful is revising the capstone instructions to use Heroku and be more clear about these shortcomings."
+
+> The project recommends you deploy early and often. The EASIEST way to do this is by deploying via GitHub, not the commandline.
+> 1. Initialize and push your app onto a new GitHub repository.
+> 2. If you cloned the project, then it is possible that the project is still connected to Thinkful's repo. We need to delete the `.git` folder in the directory (NOT `.github`). If you can't find the `.git` folder, go to your File Explorer, and view hidden items. You should be able to see it and delete it.
+> 3. [Create a project on Vercel](https://vercel.com/new).
+> 4. Link up your GitHub account if you haven't already.
+> 5. If everything's good up till this point, you should be able to import your capstone project into Vercel.
+> 6. Select your personal account.
+> 7. Select the `back-end` folder, and press 'Continue'.
+> 8. Blah blah blah options. Name the project so you can tell it is the backend, something like `periodic-tables-backend`.
+> 9. Deploy, baby!!
+> 10. After it is deployed, the preview should say something like `{"error":"Path not found: /"}`. Good news: this error is good. It means it deployed correctly.
+> 11. Time to do the same process but for the `front-end` folder. [Create a project on Vercel again](https://vercel.com/new) and import the same GitHub repo. You don't have to do anything special. You'll notice that the final settings page recognizes that it is a React app. That's neat!
+> 12. If everything worked out, you should see the base template of the starter project. The BEST part about deploying via GitHub is that Vercel will automatically update your website **every time you push your project onto your GitHub repo's main branch**. That saves SO MUCH headache from deploying via the command line, at least in my opinion.
 
 ---
 
-## *(0.5) Creating your databases*
+## *(0.4) Creating your databases*
 Here's a refresher on ElephantSQL and DBeaver!
 1. [Create a new instance](https://customer.elephantsql.com/instance/create).
 2. Select a name and tag. I named one of mine `pt-devlopment` and gave it a `Periodic Tables` tag.
@@ -1648,6 +1659,95 @@ if(edit) {
 ```
 
 We will have to revisit this later to add full functionality once the back end is set up. But for now, I feel pretty satisfied with our front end, so we can move on to the back end!
+
+---
+
+# **9 : Setting up the database with Knex**
+After all of that React, it's time to move on to the back end with Knex. In this section, we will set up our database by migrating some tables, then seeding it as well. If you have not set up your databases, I would recommend doing that now and reading that section before continuing. Also check to make sure you've set up the URLs in your `/back-end/.env` file. Alright, with that out of the way, let's go review some Knex!
+
+---
+
+## *(9.1) Migrating*
+I have created an entity relationship diagram (ERD) to help with this process.
+
+![erd](https://user-images.githubusercontent.com/64234681/118878986-0b156c00-b8a5-11eb-811d-5f62cd7511ad.png)
+
+Before we start working on creating our tables, I want to make sure we are starting from a clean slate. First, make sure your terminal is located in `/back-end`. All Knex commands should be ran from this folder instead of the root directory. Run `npx knex migrate:rollback`. It should say one migration was rolled back.
+
+Using the ERD, we can edit the `createReservationsTable` migration in `/src/db/migrations`.
+```javascript
+// creating a table is pretty easy; follow this general format.
+// this function is called whenever we run a migration
+exports.up = function(knex) {
+	return knex.schema.createTable("reservations", (table) => {
+    		table.increments("reservation_id").primary().notNullable();
+		table.string("first_name").notNullable();
+		table.string("last_name").notNullable();
+		table.string("mobile_number").notNullable();
+		table.date("reservation_date").notNullable();
+		table.time("reservation_time").notNullable();
+		table.integer("people").notNullable();
+		table.string("status").notNullable();
+    		table.timestamps(true, true);
+  	});
+};
+
+// this function is ran whenever migrations are rolled back
+exports.down = function(knex) {
+  	return knex.schema.dropTable("reservations");
+};
+```
+
+Now, let's make our own migration file. Run `npx knex migrate:make createTablesTable` in the command line. As funny as `createTablesTable` sounds, it is accurate, lol. Great, let's go move to the file just created and use our ERD to create this table!
+```javascript
+exports.up = function(knex) {
+	return knex.schema.createTable("tables", (table) => {
+		table.increments("table_id").primary().notNullable();
+		table.string("table_name").notNullable();
+		table.integer("capacity").notNullable();
+		table.string("status").notNullable();
+		
+		// let's make a foreign key here:
+		table.integer("reservation_id").unsigned();
+		table.foreign("reservation_id")
+			.references("reservation_id")
+			.inTable("reservations")
+			.onDelete("CASCADE");
+			
+		table.timestamps(true, true);
+	  });
+};
+
+exports.down = function(knex) {
+	return knex.schema.dropTable("tables");
+};
+```
+
+With our migration files set up, let's run them! In the terminal, run `npx knex migrate:latest`. If everything worked, we should be able to go into DBeaver and check out our tables made in pt-development. Yay!
+
+---
+
+## *(9.2) Seeding*
+The only data we have to seed are the tables found in US-04. Be sure that your command line is in the `back-end` folder, and walk through these steps to get your tables table seeded.
+
+Run `npx knex seed:make 01-tables`, then go to that file, found in `/db/seeds`.
+```javascript
+exports.seed = function(knex) {
+	return knex
+		.raw("TRUNCATE TABLE tables RESTART IDENTITY CASCADE")
+    		.then(function () {
+			// Inserts seed entries
+    			return knex('tables').insert([
+    				{ table_name: "Bar #1", capacity: 1, status: "free" },
+        			{ table_name: "Bar #2", capacity: 1, status: "free" },
+        			{ table_name: "#1", capacity: 6, status: "free" },
+				{ table_name: "#2", capacity: 6, status: "free" },
+      			]);
+    		});
+};
+```
+
+If you've already ran your migrations, you will then be able to run `npx knex seed:run`. Hooray!
 
 ---
 
