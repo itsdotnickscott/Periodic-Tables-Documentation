@@ -63,7 +63,7 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
 
 ---
 
-### *(0.1) Changelog*
+## *(0.1) Changelog*
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
 
 **May 17th**
@@ -77,7 +77,7 @@ If I significantly edited a section after it was already written, there's a chan
 
 ---
 
-### *(0.2) My current progress on the capstone*
+## *(0.2) My current progress on the capstone*
 Front End:
 - [ ] US-01 Create and list reservations
 - [X] US-02 Create reservation on a future, working date
@@ -100,13 +100,13 @@ Back End:
 
 ---
 
-### *(0.3) Starter code won't start*
+## *(0.3) Starter code won't start*
 Surprise! Thinkful starter code will crash when running `npm run start:dev`. If you read my guide for Flashcards, you'll remember the fix.
 In `./package.json` (make sure you're looking at the file in the root directory), change the `start:dev` script to: `"npx concurrently \"npm run start:dev --prefix ./back-end\" \"npm start --prefix ./front-end\""`
 
 ---
 
-### *(0.4) Deploying your app*
+## *(0.4) Deploying your app*
 The project recommends you deploy early and often. The EASIEST way to do this is by deploying via GitHub, not the commandline.
 1. Initialize and push your app onto a new GitHub repository.
 2. If you cloned the project, then it is possible that the project is still connected to Thinkful's repo. We need to delete the `.git` folder in the directory (NOT `.github`). If you can't find the `.git` folder, go to your File Explorer, and view hidden items. You should be able to see it and delete it.
@@ -123,7 +123,7 @@ The project recommends you deploy early and often. The EASIEST way to do this is
 
 ---
 
-### *(0.5) Creating your databases*
+## *(0.5) Creating your databases*
 Here's a refresher on ElephantSQL and DBeaver!
 1. [Create a new instance](https://customer.elephantsql.com/instance/create).
 2. Select a name and tag. I named one of mine `pt-devlopment` and gave it a `Periodic Tables` tag.
@@ -156,7 +156,7 @@ The testing for this project is a bit more frustrating than what we've dealt wit
 
 ---
 
-### *(1.1) Tests*
+## *(1.1) Tests*
 You can always look at the test files yourself, but I LOVE having all of the tests in a list for easy reference, so here they are! (tests checked off are tests that are passing for my current code).
 
 `/reservations/new` page
@@ -165,7 +165,7 @@ You can always look at the test files yourself, but I LOVE having all of the tes
 
 ---
 
-### *(1.2) Form*
+## *(1.2) Form*
 I am going to try my best to be as in-depth as I can about my process as a programmer and how I am personally building my app. I'm going to start by building up the front-end entirely. I'm not working to style it at all. I'm getting what I need to be displayed on each page to create a minimum-viable product (MVP) without focusing on little details. I am a very detail-oriented person, but I know I have to ignore it and save it for later, because it's not going to help right now!
 
 Of course, this is YOUR project and YOUR workflow. YOU decide what to do and when!
@@ -239,7 +239,7 @@ Byotiful.
 
 ---
 
-### *(1.3) Dipping our toes back into React*
+## *(1.3) Dipping our toes back into React*
 *shudder* It's React...
 
 Let's start by setting up our form data with the `useState` hook.
