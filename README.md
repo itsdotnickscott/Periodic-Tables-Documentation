@@ -33,6 +33,11 @@
 	* [(4.X - Optional) Moving the API calls](#4x---optional-moving-the-api-calls)
 	* [(4.5) Seating a reservation](#45-seating-a-reservation)
 
+* [**5 : US-05 - Finish an occupied table (front end)**](#5--us-05---finish-an-occupied-table-front-end)
+	* [(5.1) Tests](#51-tests)
+	* [(5.2) Finish button](#52-finish-button)
+	* [(5.3) Window.confirm()](#53-windowconfirm)
+
 ---
 
 # **0 : Introduction**
@@ -1206,11 +1211,74 @@ export default function SeatReservation({ reservations, tables }) {
 	}
 	
 	// ...
+}
 ```
 
 The final page looks like this...except I haven't set up the back end yet, so there's no tables in the drop-down. Looks like we will be visiting this again in the back end.
 
 ![seat-reservation-example](https://user-images.githubusercontent.com/64234681/118546160-6829ea00-b70c-11eb-8340-6e79289a0cab.png)
+
+---
+
+# **5 : US-05 - Finish an occupied table (front end)**
+Let's jump in to this rather short user story.
+
+---
+
+## *(5.1) Tests*
+`/dashboard` page
+- [ ] clicking finish button and then clicking OK makes that table available
+- [ ] clicking finish button and then clicking CANCEL does nothing
+
+---
+
+## *(5.2) Finish button*
+In my program, we will be adding the finish button to my `/dashboard/TableRow.js` component:
+```javascript
+return (
+	<tr>
+		<th scope="row">{table.table_id}</th>
+		<td>{table.table_name}</td>
+		<td>{table.capacity}</td>
+		<td data-table-id-status={table.table_id}>{table.status}</td>
+
+		{ /* i used an && here. the button will only show up if the table's status is occupied. */ }
+		{table.status === "occupied" &&
+			<td data-table-id-finish={table.table_id}>
+				<button onClick={handleFinish} type="button">Finish</button>
+			</td>
+		}
+	</tr>
+);
+```
+
+---
+
+## *(5.3) Window.confirm()*
+`/dashboard/TableRow.js`:
+```javascript
+import { useHistory } from "react-router-dom";
+
+export default function TableRow({ table, handleFinish }) {
+	const history = useHistory();
+
+	if(!table) return null;
+
+	// Window.confirm will show a dialogue that will give an "OK" button or a "Cancel" button.
+	// it will return true if the OK button is pressed, and false for cancel
+	// the dashboard should reload if OK is pressed, i use history here for that reason
+	function handleFinish() {
+		if(Window.confirm("Is this table ready to seat new guests? This cannot be undone.")) {
+			// delete request here, we will add this later
+			history.push("/dashboard");
+		}
+	}
+	
+	// ...
+}
+```
+
+That's it!
 
 ---
 
