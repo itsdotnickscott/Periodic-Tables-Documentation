@@ -1260,7 +1260,7 @@ return (
 );
 ```
 
-Now, let's make our `handleFinish` function using `Window.confirm()`:
+Now, let's make our `handleFinish` function using `window.confirm()`:
 ```javascript
 import { useHistory } from "react-router-dom";
 
@@ -1269,11 +1269,11 @@ export default function TableRow({ table, handleFinish }) {
 
 	if(!table) return null;
 
-	// Window.confirm will show a dialogue that will give an "OK" button or a "Cancel" button.
+	// window.confirm will show a dialogue that will give an "OK" button or a "Cancel" button.
 	// it will return true if the OK button is pressed, and false for cancel
 	// the dashboard should reload if OK is pressed, i use history here for that reason
 	function handleFinish() {
-		if(Window.confirm("Is this table ready to seat new guests? This cannot be undone.")) {
+		if(window.confirm("Is this table ready to seat new guests? This cannot be undone.")) {
 			// delete request here, we will add this later
 			history.push("/dashboard");
 		}
@@ -1460,7 +1460,24 @@ return (
 			<button type="submit" onClick={handleSubmit}>Find</button>
 		</form>
 			
-		{searchResultsJSX()}
+		<table class="table">
+			<thead class="thead-light">
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">First Name</th>
+					<th scope="col">Last Name</th>
+					<th scope="col">Mobile Number</th>
+					<th scope="col">Time</th>
+					<th scope="col">People</th>
+					<th scope="col">Status</th>
+					<th scope="col">Seat</th>
+				</tr>
+			</thead>
+				
+			<tbody>
+				{searchResultsJSX()}
+			</tbody>
+		</table>
 	</div>
 );
 ```
@@ -1468,6 +1485,164 @@ return (
 How does it look??? (Terrible, but we don't care about style yet)
 
 ![search-example](https://user-images.githubusercontent.com/64234681/118860206-f67aa900-b88f-11eb-80a5-dd7d3aed25f6.png)
+
+---
+
+# **8 : US-08 - Change an existing reservation (front end)**
+It's the final user story. After we complete the front end for this, we can start moving into the back end and finish our app! Let's dive in!
+
+---
+
+## *(8.1) Tests*
+`/dashboard` page
+reservation edit link
+- [ ] goes to the /reservations/:reservation_id/edit page
+
+clicking the reservation cancel button
+- [ ] then clicking OK removes the reservation
+- [ ] then clicking cancel makes no changes
+
+`/reservations/:reservation_id/edit` page
+- [ ] canceling form returns to the previous page
+- [ ] filling and submitting form updates the reservation
+
+---
+
+## *(8.2) Edit and cancel buttons*
+We need to add these two buttons to both the `/search` route and the `/dashboard` route. Luckily, this makes our job quite easy since our reservations are displayed through our `/dashboard/ReservationRow.js` component. First, though, let's edit our table headers in both `/dashboard/Dashboard.js` and `/search/Search.js`:
+```javascript
+<table class="table">
+	<thead class="thead-light">
+		<tr>
+			<th scope="col">ID</th>
+			<th scope="col">First Name</th>
+			<th scope="col">Last Name</th>
+			<th scope="col">Mobile Number</th>
+			<th scope="col">Time</th>
+			<th scope="col">People</th>
+			<th scope="col">Status</th>
+			<th scope="col">Edit</th>
+			<th scope="col">Cancel</th>
+			<th scope="col">Seat</th>
+		</tr>
+	</thead>
+	
+	{ /* ... */ }
+</table>
+```
+
+Next, let's head over to `ReservationRow.js` to add these buttons:
+```javascript
+return (
+	<tr>
+		<th scope="row">{reservation.reservation_id}</th>
+		<td>{reservation.first_name}</td>
+		<td>{reservation.last_name}</td>
+		<td>{reservation.mobile_number}</td>
+		<td>{reservation.reservation_time}</td>
+		<td>{reservation.people}</td>
+		<td data-reservation-id-status={reservation.reservation_id}>{reservation.status}</td>
+
+		<td>
+			<a href={`/reservations/${reservation.reservation_id}/edit`}>
+				<button type="button">Edit</button>
+			</a>
+		</td>
+
+		<td>
+			{ /* the cancel button requires a data-reservation-id-cancel attribute for the tests */ }
+			<button type="button" onClick={handleCancel} data-reservation-id-cancel={reservation.reservation_id}>
+				Cancel
+			</button>
+		</td>
+
+		{reservation.status === "booked" &&
+			<td>
+				<a href={`/reservations/${reservation.reservation_id}/seat`}>
+					<button type="button">Seat</button>
+				</a>
+			</td>
+		}
+	</tr>
+);
+```
+
+Let's create a `handleCancel` function:
+```javascript
+function handleCancel() {
+	// revisiting our friend window.confirm:
+	if(window.confirm("Do you want to cancel this reservation? This cannot be undone.")) {
+		// api call will go here eventually
+
+		window.location.reload(); 
+	}
+}
+```
+
+---
+
+## *(8.3) Edit reservation*
+Call me efficient...but really it is just laziness. I really don't want to make a new component to edit a reservation, since the form will look exactly like our `/reservations/NewReservation.js` component. I'm going to try to refactor our already existing form so that it can be used for editing as well.
+```javascript
+// to differentiate a new reservation from an existing one, i to pass an optional prop when we are editing
+export default function NewReservation({ reservations }) {
+```
+
+Let's go set up our route in `/layout/Routes.js`. You will see the `reservations` prop being passed in, thus differentiating this `NewReservation` component from the other route `/reservations/new`. (We will only have the `reservations` prop passed in if we are editing a reservation.) I also pass an `edit` prop.
+```javascript
+<Route path="/reservations/:reservation_id/edit">
+	<NewReservation 
+		edit={true}
+		reservations={reservations}
+	/>
+</Route>
+```
+
+Let's shift back to `/reservations/NewReservation.js`. Now that we are using this component to edit as well, we need to add some additional functionality. First, if we are editing, we need to pull the `reservation_id` from the url.
+```javascript
+export default function NewReservation({ edit, reservations }) {
+	const history = useHistory();
+	const { reservation_id } = useParams();
+	
+	// ...
+}
+```
+
+Beautiful. Let's set up an `if` statement after our state declarations in case we are editing. We need to check to make sure we have all the needed information to continue.
+```javascript
+if(edit) {
+	// if either of these don't exist, we cannot continue.
+	if(!reservations || !reservation_id) return null;
+
+	// let's try to find the corresponding reservation:
+	const foundReservation = reservations.find((reservation) => 
+		reservation.reservation_id === Number(reservation_id));
+
+	// if it doesn't exist, or the reservation is booked, we cannot edit.
+	if(!foundReservation || foundReservation.status !== "booked") {
+		return <p>Only booked reservations can be edited.</p>;
+	}
+}
+```
+
+Finally, the fields should be pre-filled with the existing information if it already exists. If we find the corresponding reservation and it is editable, we will set `formData` to the reservation data.
+```javascript
+if(edit) {
+	// ...
+
+	setFormData({
+		first_name: foundReservation.first_name,
+		last_name: foundReservation.last_name,
+		mobile_number: foundReservation.mobile_number,
+		reservation_date: foundReservation.reservation_date,
+		reservation_time: foundReservation.reservation_time,
+		people: foundReservation.people,
+		reservation_id: foundReservation.reservation_id,
+	});
+}
+```
+
+We will have to revisit this later to add full functionality once the back end is set up. But for now, I feel pretty satisfied with our front end, so we can move on to the back end!
 
 ---
 
