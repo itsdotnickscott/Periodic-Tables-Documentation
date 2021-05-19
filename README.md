@@ -36,7 +36,10 @@
 * [**5 : US-05 - Finish an occupied table (front end)**](#5--us-05---finish-an-occupied-table-front-end)
 	* [(5.1) Tests](#51-tests)
 	* [(5.2) Finish button](#52-finish-button)
-	* [(5.3) Window.confirm()](#53-windowconfirm)
+
+* [**6 : US-06 - Reservation status (front end)**](#6--us-06---reservation-status-front-end)
+	* [(6.1) Tests](#61-tests)
+	* [(6.2) Seat button](#62-seat-button)
 
 ---
 
@@ -1252,10 +1255,7 @@ return (
 );
 ```
 
----
-
-## *(5.3) Window.confirm()*
-`/dashboard/TableRow.js`:
+Now, let's make our `handleFinish` function using `Window.confirm()`:
 ```javascript
 import { useHistory } from "react-router-dom";
 
@@ -1279,6 +1279,57 @@ export default function TableRow({ table, handleFinish }) {
 ```
 
 That's it!
+
+---
+
+# **6 : US-06 - Reservation status (front end)**
+Another short user story, at least for the front end.
+
+---
+
+## *(6.1) Tests*
+`/dashboard` page
+- [ ] /dashboard displays status
+- [ ] Seating the reservation changes status to 'seated' and hides Seat button
+- [ ] Finishing the table removes the reservation from the list
+
+---
+
+## *(6.2) Seat button*
+I already included a table column for the reservation's status, but we are going to add some extra functionality. The component I will be editing is `/dashboard/ReservationRow.js`:
+```javascript
+import React from "react";
+
+export default function ReservationRow({ reservation }) {
+	// if the reservation is finished, we do not want it to be shown on the dashboard
+	if(!reservation || reservation.status === "finished") return null;
+
+	return (
+		<tr>
+			<th scope="row">{reservation.reservation_id}</th>
+			<td>{reservation.first_name}</td>
+			<td>{reservation.last_name}</td>
+			<td>{reservation.mobile_number}</td>
+			<td>{reservation.reservation_time}</td>
+			<td>{reservation.people}</td>
+			
+			// the instructions ask to include a data-reservation-id-status so the tests can find it
+			<td data-reservation-id-status={reservation.reservation_id}>{reservation.status}</td>
+
+			// i am using the exact same logic i used for the finish button in 5.2
+			{reservation.status === "booked" &&
+				<td>
+					<a href={`/reservations/${reservation.reservation_id}/seat`}>
+						<button type="button">Seat</button>
+					</a>
+				</td>
+			}
+		</tr>
+	);
+}
+```
+
+We knocking these out!
 
 ---
 
