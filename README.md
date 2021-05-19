@@ -76,7 +76,8 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
 
 **May 19th**
-* Announced that Vercel is no longer required - 0.4 has been deprecated, but still exists for reference.
+* Announced that Vercel is no longer required - 0.4 has been deprecated, but still exists for reference. See Grey's update:
+> Grey: "According to Rich, next week, we should be getting instructions about deploying this app to Heroku. We can ignore the Continuous Integration (CI) tests on github when we push repos up there. If the tests pass locally, keep moving through the user stories until the entire testing suite passes. Apparently, the CI tests weren't originally supposed to be included AND Vercel's "serverless function" infrastructure doesn't work well with the way we build front-ends, so Thinkful is revising the capstone instructions to use Heroku and be more clear about these shortcomings."
 
 **May 17th**
 * Included additional workflow information in the introduction.
@@ -120,9 +121,7 @@ In `./package.json` (make sure you're looking at the file in the root directory)
 
 ## *(0.X) Deploying your app to Vercel (deprecated)*
 > EDIT (5/19): Grey has informed us that we no longer need to deploy to Vercel. It is possible we will deploy to Heroku in the future, but for now, this section is no longer needed.
-
-> Grey: "According to Rich, next week, we should be getting instructions about deploying this app to Heroku. We can ignore the Continuous Integration (CI) tests on github when we push repos up there. If the tests pass locally, keep moving through the user stories until the entire testing suite passes. Apparently, the CI tests weren't originally supposed to be included AND Vercel's "serverless function" infrastructure doesn't work well with the way we build front-ends, so Thinkful is revising the capstone instructions to use Heroku and be more clear about these shortcomings."
-
+> 
 > The project recommends you deploy early and often. The EASIEST way to do this is by deploying via GitHub, not the commandline.
 > 1. Initialize and push your app onto a new GitHub repository.
 > 2. If you cloned the project, then it is possible that the project is still connected to Thinkful's repo. We need to delete the `.git` folder in the directory (NOT `.github`). If you can't find the `.git` folder, go to your File Explorer, and view hidden items. You should be able to see it and delete it.
