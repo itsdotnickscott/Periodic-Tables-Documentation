@@ -1,5 +1,5 @@
 # Periodic Tables Capstone Guide
-### _Table of Contents_
+## *Table of Contents*
 * [**0 : Introduction**](#0--introduction)
 	* [(0.1) Changelog](#01-changelog)
 	* [(0.2) My current progress on the capstone](#02-my-current-progress-on-the-capstone)
