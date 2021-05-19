@@ -46,6 +46,11 @@
 	* [(7.2) Search component](#72-search-component)
 	* [(7.3) Search results](#73-search-results)
 
+* [**8 : US-08 - Change an existing reservation (front end)**](#8--us-08---change-an-existing-reservation-front-end)
+	* [(8.1) Tests](#81-tests)
+	* [(8.2) Edit and cancel buttons](#82-edit-and-cancel-buttons)
+	* [(8.3) Edit reservation](#83-edit-reservation)
+
 ---
 
 # **0 : Introduction**
