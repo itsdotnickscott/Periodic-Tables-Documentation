@@ -41,6 +41,11 @@
 	* [(6.1) Tests](#61-tests)
 	* [(6.2) Seat button](#62-seat-button)
 
+* [**7: US-07 - Search for a reservation by phone number (front end)**](#7--us-07---search-for-a-reservation-by-phone-number-front-end)
+	* [(7.1) Tests](#71-tests)
+	* [(7.2) Search component](#72-search-component)
+	* [(7.3) Search results](#73-search-results)
+
 ---
 
 # **0 : Introduction**
@@ -1313,10 +1318,10 @@ export default function ReservationRow({ reservation }) {
 			<td>{reservation.reservation_time}</td>
 			<td>{reservation.people}</td>
 			
-			// the instructions ask to include a data-reservation-id-status so the tests can find it
+			{ /* the instructions ask to include a data-reservation-id-status so the tests can find it */ }
 			<td data-reservation-id-status={reservation.reservation_id}>{reservation.status}</td>
 
-			// i am using the exact same logic i used for the finish button in 5.2
+			{ /* i am using the exact same logic i used for the finish button in 5.2 */ }
 			{reservation.status === "booked" &&
 				<td>
 					<a href={`/reservations/${reservation.reservation_id}/seat`}>
@@ -1330,6 +1335,139 @@ export default function ReservationRow({ reservation }) {
 ```
 
 We knocking these out!
+
+---
+
+# **7 : US-07 - Search for a reservation by phone number (front end)**
+In this section, we will be creating a new component so that we are able to search for reservations by mobile number. Recall that I haven't implemented any backend yet, so we won't be able to test it quite yet. Let's jump in!
+
+---
+
+## *(7.1) Tests*
+`/search` page
+- [ ] entering an existing mobile number and submitting displays the matched records
+- [X] entering an non-existent phone number and submitting displays a No reservations found message
+
+---
+
+## *(7.2) Search component*
+Let's create a new component together. I will be creating this component in `/search/Search.js`, in a new folder I made. We can easily set up our `form`:
+```javascript
+// i know we will be using useState in the future, so i'm importing it now
+import React, { useState } from "react";
+
+export default function Search() {
+	return (
+		<div>
+			<form>
+				<label htmlFor="mobile_number">Enter a customer's phone number:</label>
+				<input 
+					name="mobile_number"
+					id="mobile_number"
+					type="tel"
+					onChange={handleChange}
+					value={mobileNumber}
+					required
+				/>
+
+				<button type="submit" onClick={handleSubmit}>Find</button>
+			</form>
+		</div>
+	);
+}
+```
+
+Next, let's make sure our route is set up in `/dashboard/Search.js`:
+```javascript
+<Route path="/search">
+	<Search />
+</Route>
+```
+
+Next, let's add some states so our form can become more functional.
+```javascript
+// this state stores the search input
+const [mobileNumber, setMobileNumber] = useState("");
+
+// this state will store the search results
+const [reservations, setReservations] = useState([]);
+
+// and, this state, well, stores an error if we get one
+const [error, setError] = useState(null);
+
+function handleChange({ target }) {
+	setMobileNumber(target.value);
+}
+
+function handleSubmit(event) {
+	event.preventDefault();
+	
+	// we will be adding our api call here
+}
+```
+
+---
+
+## *(7.3) Search results*
+We can use the function Thinkful already gave us in `/utils/api` to make our API call. We can easily go look at how the API call was made in `/dashboard/Routes.js`. (If you didn't read 4.X, this API call is still in your dashboard component.) Let's adopt the same logic in our `/search/Search.js` component:
+```javascript
+function handleSubmit(event) {
+	event.preventDefault();
+
+	const abortController = new AbortController();
+
+	setError(null);
+
+	// our search query is mobile_number (the name of the column in the reservations table)
+	// the search value is our mobileNumber state
+	listReservations({ mobile_number: mobileNumber }, abortController.signal)
+		.then(setReservations)
+		.catch(setError);
+
+	return () => abortController.abort();
+}
+```
+
+Now, let's add our search results to the return statement. I am going to create a `searchResultsJSX` variable:
+```javascript
+const searchResultsJSX = () => {
+	// i use a ternary here. we would like to return something different if there are no reservations.
+	return reservations.length > 0 ?
+		// you will see that i used the same ReservationRow component that we used in the Dashboard. yay less work!
+		reservations.map((reservation) => 
+			<ReservationRow key={reservation.reservation_id} reservation={reservation} />) :
+		<p>No reservations found</p>;
+}
+```
+
+Let's look at our ending `return` statement!
+```javascript
+return (
+	<div>
+		<form>
+			<ErrorAlert error={error} />
+
+			<label htmlFor="mobile_number">Enter a customer's phone number:</label>
+			<input 
+				name="mobile_number"
+				id="mobile_number"
+				type="tel"
+				onChange={handleChange}
+				value={mobileNumber}
+				required
+			/>
+
+			<button type="submit" onClick={handleSubmit}>Find</button>
+		</form>
+			
+		{searchResultsJSX()}
+	</div>
+);
+```
+
+How does it look??? (Terrible, but we don't care about style yet)
+
+![search-example](https://user-images.githubusercontent.com/64234681/118860206-f67aa900-b88f-11eb-80a5-dd7d3aed25f6.png)
 
 ---
 
