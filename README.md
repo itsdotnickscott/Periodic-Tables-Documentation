@@ -55,6 +55,13 @@
 	* [(9.1) Migrating](#91-migrating)
 	* [(9.2) Seeding](#92-seeding)
 
+* [**10 : US-01, US-02, and US-03 (back end)**](#10--us-01-us-02-and-us-03-back-end)
+	* [(10.1) Tests](#101-tests)
+	* [(10.2) Router](#102-router)
+	* [(10.3) Controller](#103-controller)
+	* [(10.4) Service](#104-service)
+	* [(10.5) API](#105-api)
+
 ---
 
 # **0 : Introduction**
@@ -74,6 +81,10 @@ If I've been a help to you at all during this cohort, I would greatly appreciate
 
 ## *(0.1) Changelog*
 If I significantly edited a section after it was already written, there's a chance you are missing some updated information. If I ever add a significant chunk to a section, I will put it here so you can stay updated. Also, I will put all edits under an "edit" section so changes are easy to find. Cheers y'all!
+
+**May 27th**
+* 9.1: Changed `onDelete("CASCADE")` to `"SET NULL"`.
+* Deployment is confirmed not required.
 
 **May 19th**
 * Announced that Vercel is no longer required - 0.4 has been deprecated, but still exists for reference. See Grey's update:
@@ -120,7 +131,7 @@ In `./package.json` (make sure you're looking at the file in the root directory)
 ---
 
 ## *(0.X) Deploying your app to Vercel (deprecated)*
-> EDIT (5/19): Grey has informed us that we no longer need to deploy to Vercel. It is possible we will deploy to Heroku in the future, but for now, this section is no longer needed.
+> EDIT (5/27): Grey and Austin has informed us that we no longer need to deploy this project.
 > 
 > The project recommends you deploy early and often. The EASIEST way to do this is by deploying via GitHub, not the commandline.
 > 1. Initialize and push your app onto a new GitHub repository.
@@ -1711,7 +1722,7 @@ exports.up = function(knex) {
 		table.foreign("reservation_id")
 			.references("reservation_id")
 			.inTable("reservations")
-			.onDelete("CASCADE");
+			.onDelete("SET NULL");
 			
 		table.timestamps(true, true);
 	  });
@@ -1747,6 +1758,209 @@ exports.seed = function(knex) {
 ```
 
 If you've already ran your migrations, you will then be able to run `npx knex seed:run`. Hooray!
+
+---
+
+# **10 : US-01, US-02, and US-03 (back end)**
+It's time to start moving into the back end part of our project. We are able to lump all of these user stories together for the front end because they all have to deal with creating a reservation and viewing the dashboard. Let's jump in!
+
+---
+
+## *(10.1) Tests*
+**US-01 Tests**
+
+not found handler
+- [X] returns 404 for non-existent route
+
+GET /reservations/:reservation_id
+- [X] returns 404 for non-existent id
+
+POST /reservations
+- [X] returns 400 if data is missing
+- [X] returns 400 if first_name is missing
+- [X] returns 400 if first_name is empty 
+- [X] returns 400 if last_name is missing 
+- [X] returns 400 if last_name is empty 
+- [X] returns 400 if mobilePhone is missing 
+- [X] returns 400 if mobilePhone is empty
+- [X] returns 400 if reservation_date is missing
+- [X] returns 400 if reservation_date is empty
+- [X] returns 400 if reservation_date is not a date
+- [X] returns 400 if reservation_time is missing
+- [X] returns 400 if reservation_time is empty
+- [X] returns 400 if reservation_time is not a time
+- [X] returns 400 if people is missing
+- [X] returns 400 if people is zero
+- [X] returns 400 if people is not a number
+- [X] returns 201 if data is valid
+
+GET /reservations
+- [ ] returns only reservations matching date query parameter
+- [ ] returns reservations sorted by time (earliest time first)
+
+**US-02 Tests**
+
+POST /reservations
+- [X] returns 400 if reservation occurs in the past
+- [X] returns 400 if reservation_date falls on a tuesday
+
+**US-03 Tests**
+
+POST /reservations
+- [X] returns 400 if reservation_time is not available
+
+---
+
+## *(10.2) Router*
+Luckily, this file was already set up for you. I would just require and implement the `methodNotFound` function, and also add the POST route for the new reservation.
+```javascript
+router
+	.route("/")
+	.get(controller.list)
+	.post(controller.create)
+	.all(methodNotAllowed);
+```
+
+---
+
+## *(10.3) Controller*
+Grabbing the date from the query will only return something if `?date=(insert date here)` is found in the URL. The `listReservations` function in the API already adds this as a query for you.
+```javascript
+async function list(req, res) {
+	const date = req.query.date;
+
+	const response = await service.list(date);
+
+	res.json({ data: response });
+}
+```
+
+Let's also make our create function.
+```javascript
+async function create(req, res) {
+	// i added this here because every new reservation automatically has a status of "booked"
+	// we can just edit the body object here, then pass it onto the response
+	req.body.data.status = "booked";
+
+	const response = await service.create(req.body.data);
+
+	// when knex creates things, it'll return something in the form of an array. we only want the first object, so i access the 0th index here
+	res.status(201).json({ data: response[0] });
+}
+```
+
+We also have to make the same validations that we've made in the front end. As a rule, never trust the body you're getting. Make sure everything is right! If you've read previous sections of my guide, you'll see that this is very similar to the validation functions made in the front end.
+```javascript
+function validateBody(req, res, next) {
+	if(!req.body.data) {
+		return next({ status: 400, message: "Body must include a data object" });
+	}
+
+	const requiredFields = ["first_name", "last_name", "mobile_number", "reservation_date", "reservation_time", "people"];
+
+	for(const field of requiredFields) {
+		if(!req.body.data.hasOwnProperty(field) || req.body.data[field] === "") {
+			return next({ status: 400, message: `Field required: '${field}'` });
+		}
+	}
+
+	if(Number.isNaN(Date.parse(`${req.body.data.reservation_date} ${req.body.data.reservation_time}`))) {
+		return next({ status: 400, message: "'reservation_date' or 'reservation_time' field is in an incorrect format" });
+	}
+
+	if(typeof req.body.data.people !== "number") {
+		return next({ status: 400, message: "'people' field must be a number" });
+	}
+
+	if(req.body.data.people < 1) {
+		return next({ status: 400, message: "'people' field must be at least 1" });
+	}
+
+	next();
+}
+
+function validateDate(req, res, next) {
+	const reserveDate = new Date(`${req.body.data.reservation_date}T${req.body.data.reservation_time}:00.000`);
+	const todaysDate = new Date();
+
+	if(reserveDate.getDay() === 2) {  
+		return next({ status: 400, message: "'reservation_date' field: restauraunt is closed on tuesday" });
+	}
+
+	if(reserveDate < todaysDate) {
+		return next({ status: 400, message: "'reservation_date' and 'reservation_time' field must be in the future" });
+	}
+
+	if(reserveDate.getHours() < 10 || (reserveDate.getHours() === 10 && reserveDate.getMinutes() < 30)) {
+		return next({ status: 400, message: "'reservation_time' field: restaurant is not open until 10:30AM" });
+	}
+
+	if(reserveDate.getHours() > 22 || (reserveDate.getHours() === 22 && reserveDate.getMinutes() >= 30)) {
+		return next({ status: 400, message: "'reservation_time' field: restaurant is closed after 10:30PM" });
+	}
+
+	if(reserveDate.getHours() > 21 || (reserveDate.getHours() === 21 && reserveDate.getMinutes() > 30)) {
+		return next({ status: 400, message: "'reservation_time' field: reservation must be made at least an hour before closing (10:30PM)" })
+	}
+
+	next();
+}
+```
+
+After requiring and implementing the `asyncErrorBoundary`, our `module.exports` should look like this:
+```javascript
+module.exports = {
+	list: asyncErrorBoundary(list),
+	create: [validateBody, validateDate, asyncErrorBoundary(create)],
+};
+```
+
+---
+
+## *(10.4) Service*
+Here's some Knex review! Luckily, in my opinion at least, things are pretty straightforward around here.
+```javascript
+const knex = require("../db/connection");
+
+const tableName = "reservations";
+
+function list(date) {
+	// if a date argument was passed in, we apply that search restriction
+	if(date) {
+		return knex(tableName)
+			.select("*")
+			.where({ reservation_date: date });
+	}
+
+	// otherwise, just return all the reservations
+	return knex(tableName)
+		.select("*");
+}
+
+function create(reservation) {
+	return knex(tableName)
+		.insert(reservation)
+		.returning("*");
+}
+```
+
+---
+
+# *(10.5) API*
+We have to connect our front end to the back end now. Thinkful gave us the `listReservations` in `/front-end/src/utils/api.js`, and we can add some more functions to this file to perform different actions. Let's create a `createReservation` function:
+```javascript
+export async function createReservation(reservation, signal) {
+	const url = `${API_BASE_URL}/reservations`;
+
+	// this will convert our object into readable JSON as a string
+	const body = JSON.stringify({ data: reservation });
+
+	// we add method: "POST" as a part of the options, and also attach the body
+	return await fetchJson(url, { headers, signal, method: "POST", body }, []);
+}
+```
+
+That should be all for now. We will be revisiting these files soon!
 
 ---
 
