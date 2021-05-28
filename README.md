@@ -62,6 +62,13 @@
 	* [(10.4) Service](#104-service)
 	* [(10.5) API](#105-api)
 
+* [**11 : US-04 (back end)**](#11--us-04-back-end)
+	* [(10.1) Tests](#111-tests)
+	* [(10.2) Router](#112-router)
+	* [(10.3) Controller](#113-controller)
+	* [(10.4) Service](#114-service)
+	* [(10.5) API](#115-api)
+
 ---
 
 # **0 : Introduction**
@@ -1946,7 +1953,7 @@ function create(reservation) {
 
 ---
 
-# *(10.5) API*
+## *(10.5) API*
 We have to connect our front end to the back end now. Thinkful gave us the `listReservations` in `/front-end/src/utils/api.js`, and we can add some more functions to this file to perform different actions. Let's create a `createReservation` function:
 ```javascript
 export async function createReservation(reservation, signal) {
@@ -1963,5 +1970,167 @@ export async function createReservation(reservation, signal) {
 That should be all for now. We will be revisiting these files soon!
 
 ---
+
+# **11 : US-04 (back end)**
+We will be doing a similar thing that we just did in the previous section. Except, instead of reservations, it is for tables. Let's continue building up this back end!
+
+---
+
+## *(11.1) Tests*
+**Create and list tables**
+
+GET /tables/:table_id
+- [X] returns 404 for non-existent id (231 ms)
+	
+POST /tables
+- [ ] returns 400 if data is missing (201 ms)
+- [X] returns 400 if table_name is missing (213 ms)
+- [X] returns 400 if table_name is empty (164 ms)
+- [X] returns 400 if table_name is one character (159 ms)
+- [X] returns 400 if capacity is missing (189 ms)
+- [X] returns 400 if capacity is zero (162 ms)
+- [X] returns 400 if capacity is not a number (161 ms)
+- [X] returns 201 if table is created (211 ms)
+	
+GET /tables
+- [ ] returns all tables sorted by table name (202 ms)
+	
+**Read reservation**
+
+GET /reservations/:reservation_Id
+- [ ] returns 200 for an existing id (167 ms)
+	
+**Seat reservation**
+
+PUT /tables/:table_id/seat
+- [ ] returns 400 if data is missing (290 ms)
+- [ ] returns 400 if reservation_id is missing (285 ms)
+- [ ] returns 404 if reservation_id does not exist (319 ms)
+- [ ] returns 200 if table has sufficient capacity (360 ms)
+- [ ] returns 400 if table does not have sufficient capacity (342 ms)
+- [ ] returns 400 if table is occupied (342 ms)
+
+---
+
+## *(11.2) Router*
+```javascript
+/**
+ * Defines the router for reservation resources.
+ *
+ * @type {Router}
+ */
+
+const router = require("express").Router();
+const controller = require("./tables.controller");
+const methodNotAllowed = require("../errors/methodNotAllowed");
+
+router
+    .route("/")
+    .get(controller.list)
+    .post(controller.create)
+    .all(methodNotAllowed);
+ 
+module.exports = router;
+```
+
+---
+
+## *(11.3) Controller*
+```javascript
+const service = require("./tables.service");
+const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
+
+async function list(req, res) {
+    const response = await service.list();
+
+    res.json({ data: response });
+}
+
+function validateBody(req, res, next) {
+    if(!req.body.data.table_name || req.body.data.table_name === "") {
+        return next({ status: 400, message: "'table_name' field cannot be empty" });
+    }
+
+    if(req.body.data.table_name.length < 2) {
+        return next({ status: 400, message: "'table_name' field must be at least 2 characters" });
+    }
+
+    if(!req.body.data.capacity || req.body.data.capacity === "") {
+        return next({ status: 400, message: "'capacity' field cannot be empty" });
+    }
+
+    if(typeof req.body.data.capacity !== "number") {
+		return next({ status: 400, message: "'capacity' field must be a number" });
+	}
+
+	if(req.body.data.capacity < 1) {
+		return next({ status: 400, message: "'capacity' field must be at least 1" });
+	}
+
+    next();
+}
+
+async function create(req, res) {
+    req.body.data.status = "free";
+
+    const response = await service.create(req.body.data);
+
+    res.status(201).json({ data: response[0] });
+}
+
+module.exports = {
+	list: asyncErrorBoundary(list),
+	create: [validateBody, asyncErrorBoundary(create)],
+};
+```
+
+---
+
+## *(11.4) Service*
+```javascript
+const knex = require("../db/connection");
+
+const tableName = "tables";
+
+function list() {
+	return knex(tableName)
+		.select("*");
+}
+
+function create(table) {
+	return knex(tableName)
+		.insert(table)
+		.returning("*");
+}
+
+module.exports = {
+	list,
+	create,
+}
+```
+
+---
+
+## *(11.5) API*
+The following functions were written in `/front-end/src/utils/api`:
+```javascript
+export async function listTables(signal) {
+  const url = `${API_BASE_URL}/tables`;
+
+  return await fetchJson(url, { headers, signal }, []);
+}
+
+export async function createTable(table, signal) {
+  const url = `${API_BASE_URL}/tables`;
+
+  const body = JSON.stringify({ data: table });
+
+  return await fetchJson(url, { headers, signal, method: "POST", body }, []);
+}
+```
+
+---
+
+
 
 Looks like you got to the bottom. 0_0 I am updating this guide as I build the program, so hopefully some sections get added soon. You're killing it!
